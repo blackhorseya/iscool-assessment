@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 	"github.com/blackhorseya/iscool-assessment/entity/repo"
+	"github.com/blackhorseya/iscool-assessment/pkg/utils"
 )
 
 type jsonFile struct {
@@ -73,7 +73,7 @@ func (i *jsonFile) GetByUsername(ctx context.Context, username string) (item *mo
 // Save is used to save the data to the file.
 func (i *jsonFile) Save() (err error) {
 	// Ensure the directory exists
-	if err = ensureDir(i.path); err != nil {
+	if err = utils.EnsureDir(i.path); err != nil {
 		return fmt.Errorf("failed to ensure directory: %w", err)
 	}
 
@@ -98,17 +98,4 @@ func (i *jsonFile) Load() (err error) {
 
 	return json.Unmarshal(data, &i.users)
 
-}
-
-// ensureDir checks if the directory for the file exists and creates it if not
-func ensureDir(fileName string) error {
-	dir := filepath.Dir(fileName)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err = os.MkdirAll(dir, 0755)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
