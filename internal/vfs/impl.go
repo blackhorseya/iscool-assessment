@@ -1,6 +1,8 @@
 package vfs
 
 import (
+	"context"
+
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 	"github.com/blackhorseya/iscool-assessment/entity/repo"
 	"github.com/blackhorseya/iscool-assessment/pkg/vfs"
@@ -20,8 +22,7 @@ func New(users repo.UserManager, folders repo.FolderManager) vfs.VirtualFileSyst
 }
 
 func (i *impl) RegisterUser(username string) (item *model.User, err error) {
-	// TODO implement me
-	panic("implement me")
+	return i.users.Register(context.TODO(), username)
 }
 
 func (i *impl) CreateFolder(username, foldername, description string) (item *model.Folder, err error) {
