@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 	"github.com/blackhorseya/iscool-assessment/entity/repo"
@@ -40,6 +41,21 @@ func (i *jsonFile) GetByUsername(ctx context.Context, username string) (item *mo
 	panic("implement me")
 }
 
+// Save is used to save the data to the file.
+func (i *jsonFile) Save() (err error) {
+	// Ensure the directory exists
+	if err = ensureDir(i.path); err != nil {
+		return fmt.Errorf("failed to ensure directory: %w", err)
+	}
+
+	data, err := json.MarshalIndent(i.users, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal data: %w", err)
+	}
+
+	return os.WriteFile(i.path, data, 0600)
+}
+
 // Load is used to load the data from the file.
 func (i *jsonFile) Load() (err error) {
 	data, err := os.ReadFile(i.path)
@@ -53,4 +69,17 @@ func (i *jsonFile) Load() (err error) {
 
 	return json.Unmarshal(data, &i.users)
 
+}
+
+// ensureDir checks if the directory for the file exists and creates it if not
+func ensureDir(fileName string) error {
+	dir := filepath.Dir(fileName)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
