@@ -53,6 +53,12 @@ var listFilesCmd = &cobra.Command{
 			return
 		}
 
+		// Warning: The folder is empty.
+		if len(files) == 0 {
+			fmt.Fprintln(os.Stderr, "Warning: The folder is empty.")
+			return
+		}
+
 		// List files with the following fields: [filename] [description] [created at] [foldername] [username]
 		for _, file := range files {
 			createdAt := file.CreatedAt.Format("2006-01-02 15:04:05")

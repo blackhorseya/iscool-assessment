@@ -52,6 +52,14 @@ var listFoldersCmd = &cobra.Command{
 			return
 		}
 
+		// Warning: The [username] doesn't have any folders.
+		if len(folders) == 0 {
+			fmt.Fprintf(os.Stderr, "Warning: The %s doesn't have any folders.\n", username)
+			return
+		}
+
+		// List all the folders within the [username] scope in following formats: [foldername] [description]
+		// [created at] [username]
 		for _, folder := range folders {
 			createdAt := folder.CreatedAt.Format("2006-01-02 15:04:05")
 			fmt.Printf("%s %s %s %s\n", folder.Name, folder.Description, createdAt, username)
