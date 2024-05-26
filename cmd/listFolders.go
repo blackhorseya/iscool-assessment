@@ -13,7 +13,7 @@ const orderAsc = "asc"
 var listFoldersCmd = &cobra.Command{
 	Use:   "list-folders [username]",
 	Short: "List all folders",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		username := args[0]
 		sortName, _ := cmd.Flags().GetString("sort-name")
