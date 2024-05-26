@@ -1,6 +1,6 @@
 //go:generate mockgen -destination=./mock_${GOFILE} -package=${GOPACKAGE} -source=${GOFILE}
 
-package fsx
+package vfs
 
 import (
 	"time"
@@ -20,4 +20,14 @@ type Folder struct {
 	Description string           `json:"description"`
 	CreatedAt   time.Time        `json:"created_at"`
 	Files       map[string]*File `json:"files"`
+}
+
+// NewFolder creates a new Folder.
+func NewFolder(name string, description string) *Folder {
+	return &Folder{
+		Name:        name,
+		Description: description,
+		CreatedAt:   time.Now(),
+		Files:       make(map[string]*File),
+	}
 }

@@ -2,7 +2,7 @@
 // Source: user.go
 
 // Package fsx is a generated GoMock package.
-package fsx
+package vfs
 
 import (
 	reflect "reflect"
