@@ -37,10 +37,6 @@ func (vfs *jsonFile) Save() error {
 func (vfs *jsonFile) Load() error {
 	data, err := os.ReadFile(vfs.filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-
 		return fmt.Errorf("failed to read file: %w", err)
 	}
 
