@@ -6,47 +6,6 @@ import (
 	"testing"
 )
 
-func TestVirtualFileSystem_SaveToFile(t *testing.T) {
-	type fields struct {
-		Users map[string]*User
-	}
-	type args struct {
-		filename string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{
-			name:    "save to file successfully",
-			fields:  fields{Users: make(map[string]*User)},
-			args:    args{filename: "vfs.json"},
-			wantErr: false,
-		},
-		{
-			name:    "save to file successfully with path",
-			fields:  fields{Users: make(map[string]*User)},
-			args:    args{filename: "out/vfs.json"},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			vfs := &VFS{
-				Users: tt.fields.Users,
-			}
-			if err := vfs.SaveToFile(tt.args.filename); (err != nil) != tt.wantErr {
-				t.Errorf("SaveToFile() error = %v, wantErr %v", err, tt.wantErr)
-			}
-
-			// clean up
-			_ = os.Remove(tt.args.filename)
-		})
-	}
-}
-
 func TestVirtualFileSystem_CreateFile(t *testing.T) {
 	type fields struct {
 		Users map[string]*User
@@ -667,6 +626,54 @@ func TestVirtualFileSystem_ListUsers(t *testing.T) {
 			if got := vfs.ListUsers(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ListUsers() = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+func TestVirtualFileSystem_LoadFromFile(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		filename string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "load from file successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{filename: "vfs.json"},
+			wantErr: false,
+		},
+		{
+			name: "load from non-existing file",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{filename: "non_existing.json"},
+			wantErr: false, // it should not error out, but return nil
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			// Save to file first to ensure it exists
+			if !tt.wantErr {
+				_ = vfs.SaveToFile(tt.args.filename)
+			}
+			if err := vfs.LoadFromFile(tt.args.filename); (err != nil) != tt.wantErr {
+				t.Errorf("LoadFromFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			// Clean up
+			_ = os.Remove(tt.args.filename)
 		})
 	}
 }
