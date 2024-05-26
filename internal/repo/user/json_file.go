@@ -97,5 +97,4 @@ func (i *jsonFile) Load() (err error) {
 	}
 
 	return json.Unmarshal(data, &i.users)
-
 }
