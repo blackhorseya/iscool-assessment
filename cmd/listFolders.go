@@ -20,17 +20,17 @@ var listFoldersCmd = &cobra.Command{
 		sortCreated, _ := cmd.Flags().GetString("sort-created")
 
 		if sortName != "" && sortCreated != "" {
-			fmt.Fprintln(os.Stderr, "Cannot use both --sort-name and --sort-created flags together")
+			fmt.Fprintln(os.Stderr, "Error: Cannot use both --sort-name and --sort-created flags together")
 			return
 		}
 
 		if sortName != "" && sortName != orderAsc && sortName != "desc" {
-			fmt.Fprintln(os.Stderr, "Invalid value for --sort-name. Use 'asc' or 'desc'")
+			fmt.Fprintln(os.Stderr, "Error: Invalid value for --sort-name. Use 'asc' or 'desc'")
 			return
 		}
 
 		if sortCreated != "" && sortCreated != orderAsc && sortCreated != "desc" {
-			fmt.Fprintln(os.Stderr, "Invalid value for --sort-created. Use 'asc' or 'desc'")
+			fmt.Fprintln(os.Stderr, "Error: Invalid value for --sort-created. Use 'asc' or 'desc'")
 			return
 		}
 
@@ -71,6 +71,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// listFoldersCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	listFoldersCmd.Flags().String("sort-name", "", "Sort folders by name")
-	listFoldersCmd.Flags().String("sort-created", "", "Sort folders by created time")
+	listFoldersCmd.Flags().String("sort-name", "", "Sort folders by name (asc or desc)")
+	listFoldersCmd.Flags().String("sort-created", "", "Sort folders by created time (asc or desc)")
 }
