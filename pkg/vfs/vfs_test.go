@@ -630,6 +630,52 @@ func TestVirtualFileSystem_ListUsers(t *testing.T) {
 	}
 }
 
+func TestVirtualFileSystem_SaveToFile(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		filename string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "save to file successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{filename: "vfs.json"},
+			wantErr: false,
+		},
+		{
+			name: "save to file with invalid filename",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{filename: "/invalid/path/vfs.json"},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			if err := vfs.SaveToFile(tt.args.filename); (err != nil) != tt.wantErr {
+				t.Errorf("SaveToFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			// Clean up
+			if !tt.wantErr {
+				_ = os.Remove(tt.args.filename)
+			}
+		})
+	}
+}
+
 func TestVirtualFileSystem_LoadFromFile(t *testing.T) {
 	type fields struct {
 		Users map[string]*User
