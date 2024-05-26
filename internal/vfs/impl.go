@@ -2,15 +2,21 @@ package vfs
 
 import (
 	"github.com/blackhorseya/iscool-assessment/entity/model"
+	"github.com/blackhorseya/iscool-assessment/entity/repo"
 	"github.com/blackhorseya/iscool-assessment/pkg/vfs"
 )
 
 type impl struct {
+	users   repo.UserManager
+	folders repo.FolderManager
 }
 
 // New is used to create a new VirtualFileSystem.
-func New() vfs.VirtualFileSystem {
-	return &impl{}
+func New(users repo.UserManager, folders repo.FolderManager) vfs.VirtualFileSystem {
+	return &impl{
+		users:   users,
+		folders: folders,
+	}
 }
 
 func (i *impl) RegisterUser(username string) (item *model.User, err error) {
