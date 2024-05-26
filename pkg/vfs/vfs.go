@@ -6,8 +6,4 @@ package vfs
 type VirtualFileSystem interface {
 	Save() error
 	Load() error
-
-	UserManager
-	FolderManager
-	FileManager
 }
