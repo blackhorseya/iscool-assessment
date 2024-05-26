@@ -2,6 +2,7 @@ package vfs
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -629,6 +630,42 @@ func TestVirtualFileSystem_DeleteUser(t *testing.T) {
 			}
 			if err := vfs.DeleteUser(tt.args.username); (err != nil) != tt.wantErr {
 				t.Errorf("DeleteUser() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestVirtualFileSystem_ListUsers(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   []string
+	}{
+		{
+			name: "list users successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+				"user2": NewUser("user2"),
+				"user3": NewUser("user3"),
+			}},
+			want: []string{"user1", "user2", "user3"},
+		},
+		{
+			name:   "list users with empty vfs",
+			fields: fields{Users: map[string]*User{}},
+			want:   []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			if got := vfs.ListUsers(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ListUsers() = %v, want %v", got, tt.want)
 			}
 		})
 	}

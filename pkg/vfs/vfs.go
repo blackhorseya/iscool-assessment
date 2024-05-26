@@ -179,10 +179,11 @@ func (vfs *VFS) DeleteUser(username string) error {
 }
 
 func (vfs *VFS) ListUsers() []string {
-	var users []string
+	users := make([]string, 0)
 	for username := range vfs.Users {
 		users = append(users, username)
 	}
+
 	return users
 }
 
