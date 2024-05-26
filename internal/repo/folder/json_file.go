@@ -35,9 +35,30 @@ func NewJSONFile(path string) (repo.FolderManager, error) {
 	return instance, nil
 }
 
-func (i *jsonFile) GetByName(ctx context.Context, owner *model.User, foldername string) (item *model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+func (i *jsonFile) GetByName(
+	ctx context.Context,
+	owner *model.User,
+	foldername string,
+) (item *model.Folder, err error) {
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	folder, exists := user.Folders[foldername]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", foldername)
+	}
+
+	return folder, nil
 }
 
 func (i *jsonFile) Create(
