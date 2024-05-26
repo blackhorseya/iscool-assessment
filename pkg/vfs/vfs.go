@@ -10,23 +10,23 @@ import (
 
 const orderAsc = "asc"
 
-var _ UserManager = &VirtualFileSystem{}
-var _ FolderManager = &VirtualFileSystem{}
-var _ FileManager = &VirtualFileSystem{}
+var _ UserManager = &VFS{}
+var _ FolderManager = &VFS{}
+var _ FileManager = &VFS{}
 
-// VirtualFileSystem represents the entire file system with user management
-type VirtualFileSystem struct {
+// VFS represents the entire file system with user management
+type VFS struct {
 	Users map[string]*User `json:"users"`
 }
 
-// NewVFS creates a new VirtualFileSystem
-func NewVFS() *VirtualFileSystem {
-	return &VirtualFileSystem{
+// NewVFS creates a new VFS
+func NewVFS() *VFS {
+	return &VFS{
 		Users: make(map[string]*User),
 	}
 }
 
-func (vfs *VirtualFileSystem) CreateFile(username, foldername, filename, description string) error {
+func (vfs *VFS) CreateFile(username, foldername, filename, description string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", username)
@@ -42,7 +42,7 @@ func (vfs *VirtualFileSystem) CreateFile(username, foldername, filename, descrip
 	return nil
 }
 
-func (vfs *VirtualFileSystem) DeleteFile(username, foldername, filename string) error {
+func (vfs *VFS) DeleteFile(username, foldername, filename string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", username)
@@ -58,7 +58,7 @@ func (vfs *VirtualFileSystem) DeleteFile(username, foldername, filename string) 
 	return nil
 }
 
-func (vfs *VirtualFileSystem) ListFiles(username, foldername, sortBy string, order string) ([]*File, error) {
+func (vfs *VFS) ListFiles(username, foldername, sortBy string, order string) ([]*File, error) {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return nil, fmt.Errorf("the %s doesn't exist", username)
@@ -90,7 +90,7 @@ func (vfs *VirtualFileSystem) ListFiles(username, foldername, sortBy string, ord
 	return files, nil
 }
 
-func (vfs *VirtualFileSystem) CreateFolder(username, foldername, description string) error {
+func (vfs *VFS) CreateFolder(username, foldername, description string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", username)
@@ -102,7 +102,7 @@ func (vfs *VirtualFileSystem) CreateFolder(username, foldername, description str
 	return nil
 }
 
-func (vfs *VirtualFileSystem) DeleteFolder(username, foldername string) error {
+func (vfs *VFS) DeleteFolder(username, foldername string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", username)
@@ -114,7 +114,7 @@ func (vfs *VirtualFileSystem) DeleteFolder(username, foldername string) error {
 	return nil
 }
 
-func (vfs *VirtualFileSystem) RenameFolder(username, foldername, newFoldername string) error {
+func (vfs *VFS) RenameFolder(username, foldername, newFoldername string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", username)
@@ -132,7 +132,7 @@ func (vfs *VirtualFileSystem) RenameFolder(username, foldername, newFoldername s
 	return nil
 }
 
-func (vfs *VirtualFileSystem) ListFolders(username string, sortBy string, order string) ([]*Folder, error) {
+func (vfs *VFS) ListFolders(username string, sortBy string, order string) ([]*Folder, error) {
 	user, exists := vfs.Users[username]
 	if !exists {
 		return nil, fmt.Errorf("the %s doesn't exist", username)
@@ -160,7 +160,7 @@ func (vfs *VirtualFileSystem) ListFolders(username string, sortBy string, order 
 	return folders, nil
 }
 
-func (vfs *VirtualFileSystem) RegisterUser(username string) error {
+func (vfs *VFS) RegisterUser(username string) error {
 	if _, exists := vfs.Users[username]; exists {
 		return fmt.Errorf("the %s has already existed", username)
 	}
@@ -170,7 +170,7 @@ func (vfs *VirtualFileSystem) RegisterUser(username string) error {
 	return nil
 }
 
-func (vfs *VirtualFileSystem) DeleteUser(username string) error {
+func (vfs *VFS) DeleteUser(username string) error {
 	if _, exists := vfs.Users[username]; !exists {
 		return fmt.Errorf("the %s doesn't exist", username)
 	}
@@ -178,7 +178,7 @@ func (vfs *VirtualFileSystem) DeleteUser(username string) error {
 	return nil
 }
 
-func (vfs *VirtualFileSystem) ListUsers() []string {
+func (vfs *VFS) ListUsers() []string {
 	var users []string
 	for username := range vfs.Users {
 		users = append(users, username)
@@ -187,7 +187,7 @@ func (vfs *VirtualFileSystem) ListUsers() []string {
 }
 
 // SaveToFile saves the virtual filesystem to a file.
-func (vfs *VirtualFileSystem) SaveToFile(filename string) error {
+func (vfs *VFS) SaveToFile(filename string) error {
 	// Ensure the directory exists
 	if err := ensureDir(filename); err != nil {
 		return fmt.Errorf("failed to ensure directory: %w", err)
@@ -201,7 +201,7 @@ func (vfs *VirtualFileSystem) SaveToFile(filename string) error {
 	return os.WriteFile(filename, data, 0600)
 }
 
-func (vfs *VirtualFileSystem) LoadFromFile(filename string) error {
+func (vfs *VFS) LoadFromFile(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {

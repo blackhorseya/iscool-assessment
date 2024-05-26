@@ -33,7 +33,7 @@ func TestVirtualFileSystem_SaveToFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			vfs := &VirtualFileSystem{
+			vfs := &VFS{
 				Users: tt.fields.Users,
 			}
 			if err := vfs.SaveToFile(tt.args.filename); (err != nil) != tt.wantErr {
@@ -112,7 +112,7 @@ func TestVirtualFileSystem_CreateFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			vfs := &VirtualFileSystem{
+			vfs := &VFS{
 				Users: tt.fields.Users,
 			}
 			if err := vfs.CreateFile(
