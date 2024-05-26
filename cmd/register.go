@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -10,9 +11,20 @@ import (
 var registerCmd = &cobra.Command{
 	Use:   "register [username]",
 	Short: "register a new user",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: 2024/5/26|sean|implement me
-		fmt.Println("register called")
+		username := args[0]
+		err := vfs.RegisterUser(username)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		err = vfs.SaveToFile(dataFile)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
 	},
 }
 

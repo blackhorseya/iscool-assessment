@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	vfs2 "github.com/blackhorseya/iscool-assessment/pkg/vfs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
+var vfs = vfs2.NewVFS()
+var dataFile = "out/vfs.json"
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
@@ -68,5 +71,12 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+
+	// Load the virtual filesystem from the config file
+	err := vfs.LoadFromFile(dataFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to load virtual filesystem: %v\n", err)
+		os.Exit(1)
 	}
 }
