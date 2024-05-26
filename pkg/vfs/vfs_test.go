@@ -549,3 +549,45 @@ func TestVirtualFileSystem_ListFolders(t *testing.T) {
 		})
 	}
 }
+
+func TestVirtualFileSystem_RegisterUser(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		username string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "register user successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{username: "user2"},
+			wantErr: false,
+		},
+		{
+			name: "register user with existing username",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{username: "user1"},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			if err := vfs.RegisterUser(tt.args.username); (err != nil) != tt.wantErr {
+				t.Errorf("RegisterUser() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
