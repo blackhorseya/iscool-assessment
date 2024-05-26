@@ -11,6 +11,7 @@ var listFoldersCmd = &cobra.Command{
 	Use:   "list-folders [username] [--sort-name|--sort-created] [asc|desc]",
 	Short: "List all folders",
 	Run: func(cmd *cobra.Command, args []string) {
+		// todo: 2024/5/26|sean|implement me
 		fmt.Println("listFolders called")
 	},
 }

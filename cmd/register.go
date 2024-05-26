@@ -11,6 +11,7 @@ var registerCmd = &cobra.Command{
 	Use:   "register [username]",
 	Short: "register a new user",
 	Run: func(cmd *cobra.Command, args []string) {
+		// todo: 2024/5/26|sean|implement me
 		fmt.Println("register called")
 	},
 }

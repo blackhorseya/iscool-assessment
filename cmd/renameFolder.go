@@ -11,6 +11,7 @@ var renameFolderCmd = &cobra.Command{
 	Use:   "rename-folder [username] [foldername] [new-folder-name]",
 	Short: "Rename a folder",
 	Run: func(cmd *cobra.Command, args []string) {
+		// todo: 2024/5/26|sean|implement me
 		fmt.Println("renameFolder called")
 	},
 }

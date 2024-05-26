@@ -11,6 +11,7 @@ var deleteFileCmd = &cobra.Command{
 	Use:   "delete-file [username] [foldername] [filename]",
 	Short: "Delete a file from a folder",
 	Run: func(cmd *cobra.Command, args []string) {
+		// todo: 2024/5/26|sean|implement me
 		fmt.Println("deleteFile called")
 	},
 }

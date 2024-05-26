@@ -11,6 +11,7 @@ var createFolderCmd = &cobra.Command{
 	Use:   "create-folder [username] [foldername] (description)",
 	Short: "create a new folder",
 	Run: func(cmd *cobra.Command, args []string) {
+		// todo: 2024/5/26|sean|implement me
 		fmt.Println("createFolder called")
 	},
 }

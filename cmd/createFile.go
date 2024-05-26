@@ -11,6 +11,7 @@ var createFileCmd = &cobra.Command{
 	Use:   "create-file [username] [foldername] [filename] [description]?",
 	Short: "Create a file in a folder",
 	Run: func(cmd *cobra.Command, args []string) {
+		// todo: 2024/5/26|sean|implement me
 		fmt.Println("createFile called")
 	},
 }
