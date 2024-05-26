@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 	"github.com/blackhorseya/iscool-assessment/entity/repo"
 )
 
 type jsonFile struct {
+	sync.Mutex
+
 	users map[string]*model.User
 	path  string
 }
@@ -19,6 +22,7 @@ type jsonFile struct {
 // NewJSONFile is used to create a new JSONFile.
 func NewJSONFile(path string) (repo.UserManager, error) {
 	instance := &jsonFile{
+		Mutex: sync.Mutex{},
 		users: make(map[string]*model.User),
 		path:  path,
 	}
@@ -32,8 +36,26 @@ func NewJSONFile(path string) (repo.UserManager, error) {
 }
 
 func (i *jsonFile) Register(ctx context.Context, username string) (item *model.User, err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	if _, exists := i.users[username]; exists {
+		return nil, fmt.Errorf("the %s has already existed", username)
+	}
+
+	user, err := model.NewUser(username)
+	if err != nil {
+		return nil, err
+	}
+
+	i.users[username] = user
+
+	err = i.Save()
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (i *jsonFile) GetByUsername(ctx context.Context, username string) (item *model.User, err error) {
