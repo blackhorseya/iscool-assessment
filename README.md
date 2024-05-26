@@ -1,5 +1,7 @@
 # Virtual File System CLI
 
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=blackhorseya_iscool-assessment&metric=coverage)](https://sonarcloud.io/summary/new_code?id=blackhorseya_iscool-assessment)
+
 This is a command-line application for managing a virtual file system with user and file management capabilities using
 Go and Cobra; it allows you to perform various operations such as registering users, creating folders, and managing
 files in a structured and efficient manner.
