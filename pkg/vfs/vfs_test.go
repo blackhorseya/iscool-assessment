@@ -126,3 +126,87 @@ func TestVirtualFileSystem_CreateFile(t *testing.T) {
 		})
 	}
 }
+
+func TestVirtualFileSystem_DeleteFile(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		username   string
+		foldername string
+		filename   string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "delete file successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1")},
+					}},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder1", filename: "file1"},
+			wantErr: false,
+		},
+		{
+			name: "delete file with non-existing user",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1")},
+					}},
+				},
+			}},
+			args:    args{username: "user2", foldername: "folder1", filename: "file1"},
+			wantErr: true,
+		},
+		{
+			name: "delete file with non-existing folder",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1")},
+					}},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder2", filename: "file1"},
+			wantErr: true,
+		},
+		{
+			name: "delete file with non-existing file name",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1")},
+					}},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder1", filename: "file2"},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			if err := vfs.DeleteFile(tt.args.username, tt.args.foldername, tt.args.filename); (err != nil) != tt.wantErr {
+				t.Errorf("DeleteFile() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
