@@ -10,8 +10,8 @@ type File struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 
-	Owner  *User   `json:"owner"`
-	Folder *Folder `json:"folder"`
+	Owner  *User   `json:"-"`
+	Folder *Folder `json:"-"`
 }
 
 // NewFile creates a new File.

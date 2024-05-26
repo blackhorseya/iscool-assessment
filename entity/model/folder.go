@@ -10,9 +10,9 @@ type Folder struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 
-	Owner   *User              `json:"owner"`
-	Files   map[string]*File   `json:"files"`
-	Folders map[string]*Folder `json:"folders"`
+	Owner   *User              `json:"-"`
+	Files   map[string]*File   `json:"-"`
+	Folders map[string]*Folder `json:"-"`
 }
 
 // NewFolder creates a new Folder.
