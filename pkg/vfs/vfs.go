@@ -7,10 +7,12 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"time"
 )
 
 var _ UserManager = &VirtualFileSystem{}
 var _ FolderManager = &VirtualFileSystem{}
+var _ FileManager = &VirtualFileSystem{}
 
 // VirtualFileSystem represents the entire file system with user management
 type VirtualFileSystem struct {
@@ -22,6 +24,74 @@ func NewVFS() *VirtualFileSystem {
 	return &VirtualFileSystem{
 		Users: make(map[string]*User),
 	}
+}
+
+func (vfs *VirtualFileSystem) CreateFile(username, foldername, filename, description string) error {
+	user, exists := vfs.Users[username]
+	if !exists {
+		return errors.New("the username doesn't exist")
+	}
+	folder, exists := user.Folders[foldername]
+	if !exists {
+		return errors.New("the foldername doesn't exist")
+	}
+	if _, exists = folder.Files[filename]; exists {
+		return errors.New("the filename has already existed")
+	}
+	folder.Files[filename] = &File{
+		Name:        filename,
+		Description: description,
+		CreatedAt:   time.Now(),
+	}
+	return nil
+}
+
+func (vfs *VirtualFileSystem) DeleteFile(username, foldername, filename string) error {
+	user, exists := vfs.Users[username]
+	if !exists {
+		return errors.New("the username doesn't exist")
+	}
+	folder, exists := user.Folders[foldername]
+	if !exists {
+		return errors.New("the foldername doesn't exist")
+	}
+	if _, exists = folder.Files[filename]; !exists {
+		return errors.New("the filename doesn't exist")
+	}
+	delete(folder.Files, filename)
+	return nil
+}
+
+func (vfs *VirtualFileSystem) ListFiles(username, foldername, sortBy string, order string) ([]*File, error) {
+	user, exists := vfs.Users[username]
+	if !exists {
+		return nil, errors.New("the username doesn't exist")
+	}
+	folder, exists := user.Folders[foldername]
+	if !exists {
+		return nil, errors.New("the foldername doesn't exist")
+	}
+	var files []*File
+	for _, file := range folder.Files {
+		files = append(files, file)
+	}
+	sort.Slice(files, func(i, j int) bool {
+		switch sortBy {
+		case "name":
+			if order == "asc" {
+				return files[i].Name < files[j].Name
+			}
+			return files[i].Name > files[j].Name
+		case "created":
+			if order == "asc" {
+				return files[i].CreatedAt.Before(files[j].CreatedAt)
+			}
+			return files[i].CreatedAt.After(files[j].CreatedAt)
+		default:
+			return files[i].Name < files[j].Name
+		}
+	})
+	return files, nil
 }
 
 func (vfs *VirtualFileSystem) CreateFolder(username, foldername, description string) error {
