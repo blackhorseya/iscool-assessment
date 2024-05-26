@@ -2,6 +2,7 @@ package folder
 
 import (
 	"context"
+	"strings"
 
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 	"github.com/blackhorseya/iscool-assessment/entity/repo"
@@ -14,7 +15,7 @@ type system struct {
 // NewSystem is used to create a new System.
 func NewSystem(path string) (repo.FolderManager, error) {
 	return &system{
-		path: path,
+		path: strings.TrimRight(path, "/"),
 	}, nil
 }
 
