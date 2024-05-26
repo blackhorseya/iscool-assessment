@@ -25,6 +25,8 @@ var registerCmd = &cobra.Command{
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return
 		}
+
+		fmt.Printf("Add %v successfully.\n", username)
 	},
 }
 

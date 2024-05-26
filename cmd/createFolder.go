@@ -31,6 +31,8 @@ var createFolderCmd = &cobra.Command{
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return
 		}
+
+		fmt.Printf("Create %v successfully.\n", foldername)
 	},
 }
 
