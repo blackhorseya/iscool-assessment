@@ -10,6 +10,7 @@ import (
 
 // FolderManager defines the interface for folder management.
 type FolderManager interface {
+	GetByName(ctx context.Context, owner *model.User, foldername string) (item *model.Folder, err error)
 	Create(ctx context.Context, owner *model.User, foldername, description string) (item *model.Folder, err error)
 	Delete(ctx context.Context, owner *model.User, foldername string) (err error)
 	Rename(ctx context.Context, owner *model.User, foldername, newFoldername string) (item *model.Folder, err error)

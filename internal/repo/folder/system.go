@@ -18,6 +18,11 @@ func NewSystem(path string) (repo.FolderManager, error) {
 	}, nil
 }
 
+func (i *system) GetByName(ctx context.Context, owner *model.User, foldername string) (item *model.Folder, err error) {
+	// TODO implement me
+	panic("implement me")
+}
+
 func (i *system) Create(ctx context.Context, owner *model.User, foldername, description string) (item *model.Folder, err error) {
 	// TODO implement me
 	panic("implement me")

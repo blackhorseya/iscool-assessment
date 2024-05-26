@@ -35,6 +35,11 @@ func NewJSONFile(path string) (repo.FolderManager, error) {
 	return instance, nil
 }
 
+func (i *jsonFile) GetByName(ctx context.Context, owner *model.User, foldername string) (item *model.Folder, err error) {
+	// TODO implement me
+	panic("implement me")
+}
+
 func (i *jsonFile) Create(
 	ctx context.Context,
 	owner *model.User,

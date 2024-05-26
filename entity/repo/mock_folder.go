@@ -93,6 +93,21 @@ func (mr *MockFolderManagerMockRecorder) DeleteFile(ctx, owner, folder, filename
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFile", reflect.TypeOf((*MockFolderManager)(nil).DeleteFile), ctx, owner, folder, filename)
 }
 
+// GetByName mocks base method.
+func (m *MockFolderManager) GetByName(ctx context.Context, owner *model.User, foldername string) (*model.Folder, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByName", ctx, owner, foldername)
+	ret0, _ := ret[0].(*model.Folder)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByName indicates an expected call of GetByName.
+func (mr *MockFolderManagerMockRecorder) GetByName(ctx, owner, foldername interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockFolderManager)(nil).GetByName), ctx, owner, foldername)
+}
+
 // List mocks base method.
 func (m *MockFolderManager) List(ctx context.Context, owner *model.User, sortBy, order string) ([]*model.Folder, error) {
 	m.ctrl.T.Helper()
