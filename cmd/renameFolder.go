@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -10,9 +11,25 @@ import (
 var renameFolderCmd = &cobra.Command{
 	Use:   "rename-folder [username] [foldername] [new-folder-name]",
 	Short: "Rename a folder",
+	Args:  cobra.ExactArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: 2024/5/26|sean|implement me
-		fmt.Println("renameFolder called")
+		username := args[0]
+		foldername := args[1]
+		newFolderName := args[2]
+
+		err := vfs.RenameFolder(username, foldername, newFolderName)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		err = vfs.SaveToFile(dataFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Rename %v to %v successfully.\n", foldername, newFolderName)
 	},
 }
 
