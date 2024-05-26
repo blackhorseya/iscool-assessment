@@ -59,8 +59,15 @@ func (i *jsonFile) Register(ctx context.Context, username string) (item *model.U
 }
 
 func (i *jsonFile) GetByUsername(ctx context.Context, username string) (item *model.User, err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	user, exists := i.users[username]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", username)
+	}
+
+	return user, nil
 }
 
 // Save is used to save the data to the file.

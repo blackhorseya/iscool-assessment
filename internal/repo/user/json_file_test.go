@@ -150,3 +150,57 @@ func Test_jsonFile_Register(t *testing.T) {
 		})
 	}
 }
+
+func Test_jsonFile_GetByUsername(t *testing.T) {
+	type fields struct {
+		users map[string]*model.User
+		path  string
+	}
+	type args struct {
+		ctx      context.Context
+		username string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "get by existing username",
+			fields: fields{
+				users: map[string]*model.User{"existingUser": {Username: "existingUser"}},
+				path:  "testdata/valid.json",
+			},
+			args: args{
+				ctx:      context.Background(),
+				username: "existingUser",
+			},
+			wantErr: false,
+		},
+		{
+			name: "get by non-existing username",
+			fields: fields{
+				users: map[string]*model.User{"existingUser": {Username: "existingUser"}},
+				path:  "testdata/valid.json",
+			},
+			args: args{
+				ctx:      context.Background(),
+				username: "nonExistingUser",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				users: tt.fields.users,
+				path:  tt.fields.path,
+			}
+			_, err := i.GetByUsername(tt.args.ctx, tt.args.username)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("jsonFile.GetByUsername() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
