@@ -27,11 +27,6 @@ func NewJSONFile(path string) (repo.FolderManager, error) {
 		path:  path,
 	}
 
-	err := instance.Load()
-	if err != nil {
-		return nil, err
-	}
-
 	return instance, nil
 }
 
