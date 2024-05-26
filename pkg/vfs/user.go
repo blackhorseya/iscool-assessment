@@ -4,6 +4,7 @@ package vfs
 
 // UserManager defines the interface for user management
 type UserManager interface {
+	GetByUsername(username string) (*User, error)
 	RegisterUser(username string) error
 	DeleteUser(username string) error
 	ListUsers() []string

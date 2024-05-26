@@ -19,6 +19,11 @@ type VFS struct {
 	Users map[string]*User `json:"users"`
 }
 
+func (vfs *VFS) GetByUsername(username string) (*User, error) {
+	// TODO implement me
+	panic("implement me")
+}
+
 // NewVFS creates a new VFS
 func NewVFS() *VFS {
 	return &VFS{
