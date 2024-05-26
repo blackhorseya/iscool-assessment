@@ -1,6 +1,7 @@
 package vfs
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -101,6 +102,94 @@ func (s *suiteTester) Test_impl_RegisterUser() {
 			}
 			if !reflect.DeepEqual(gotItem, tt.wantItem) {
 				t.Errorf("RegisterUser() gotItem = %v, want %v", gotItem, tt.wantItem)
+			}
+		})
+	}
+}
+
+func (s *suiteTester) Test_impl_CreateFolder() {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "validFoldername", "validDescription")
+
+	type args struct {
+		username    string
+		foldername  string
+		description string
+		mock        func()
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantItem *model.Folder
+		wantErr  bool
+	}{
+		{
+			name: "create folder with valid username and foldername",
+			args: args{
+				username:    "validUsername",
+				foldername:  "validFoldername",
+				description: "validDescription",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), user1.Username).Return(user1, nil).Times(1)
+
+					s.folders.EXPECT().Create(
+						gomock.Any(),
+						user1,
+						folder1.Name,
+						folder1.Description,
+					).Return(folder1, nil).Times(1)
+				},
+			},
+			wantItem: folder1,
+			wantErr:  false,
+		},
+		{
+			name: "create folder with empty username",
+			args: args{
+				username:    "",
+				foldername:  "validFoldername",
+				description: "validDescription",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), "").Return(nil, errors.New("empty user")).Times(1)
+				},
+			},
+			wantItem: nil,
+			wantErr:  true,
+		},
+		{
+			name: "create folder with empty foldername",
+			args: args{
+				username:    "validUsername",
+				foldername:  "",
+				description: "validDescription",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), "validUsername").Return(user1, nil).Times(1)
+
+					s.folders.EXPECT().Create(
+						gomock.Any(),
+						gomock.Any(),
+						gomock.Any(),
+						gomock.Any(),
+					).Return(nil, fmt.Errorf("foldername cannot be empty"))
+				},
+			},
+			wantItem: nil,
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotItem, err := s.vfs.CreateFolder(tt.args.username, tt.args.foldername, tt.args.description)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CreateFolder() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotItem, tt.wantItem) {
+				t.Errorf("CreateFolder() gotItem = %v, want %v", gotItem, tt.wantItem)
 			}
 		})
 	}

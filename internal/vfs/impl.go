@@ -26,8 +26,12 @@ func (i *impl) RegisterUser(username string) (item *model.User, err error) {
 }
 
 func (i *impl) CreateFolder(username, foldername, description string) (item *model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	user, err := i.getUserByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	return i.folders.Create(context.TODO(), user, foldername, description)
 }
 
 func (i *impl) DeleteFolder(username, foldername string) (err error) {
@@ -58,4 +62,8 @@ func (i *impl) DeleteFile(username, foldername, filename string) (err error) {
 func (i *impl) ListFiles(username, foldername string, sortBy string, order string) (items []*model.File, err error) {
 	// TODO implement me
 	panic("implement me")
+}
+
+func (i *impl) getUserByUsername(username string) (item *model.User, err error) {
+	return i.users.GetByUsername(context.TODO(), username)
 }
