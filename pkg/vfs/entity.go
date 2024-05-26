@@ -1,15 +1,7 @@
 package vfs
 
 import (
-	"fmt"
-	"regexp"
 	"time"
-)
-
-// Constants for input validation
-const (
-	MaxInputLength = 255
-	ValidChars     = "^[a-zA-Z0-9_-]+$"
 )
 
 // File represents a file in the virtual filesystem.
@@ -21,11 +13,9 @@ type File struct {
 
 // NewFile creates a new File.
 func NewFile(name, description string) (*File, error) {
-	if len(name) == 0 || len(name) > MaxInputLength {
-		return nil, fmt.Errorf("file name length must be between 1 and %d characters", MaxInputLength)
-	}
-	if match, _ := regexp.MatchString(ValidChars, name); !match {
-		return nil, fmt.Errorf("file name contains invalid characters")
+	err := ValidateInput(name)
+	if err != nil {
+		return nil, err
 	}
 
 	return &File{
@@ -45,11 +35,9 @@ type Folder struct {
 
 // NewFolder creates a new Folder.
 func NewFolder(name, description string) (*Folder, error) {
-	if len(name) == 0 || len(name) > MaxInputLength {
-		return nil, fmt.Errorf("folder name length must be between 1 and %d characters", MaxInputLength)
-	}
-	if match, _ := regexp.MatchString(ValidChars, name); !match {
-		return nil, fmt.Errorf("folder name contains invalid characters")
+	err := ValidateInput(name)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Folder{
@@ -68,11 +56,9 @@ type User struct {
 
 // NewUser creates a new User.
 func NewUser(username string) (*User, error) {
-	if len(username) == 0 || len(username) > MaxInputLength {
-		return nil, fmt.Errorf("username length must be between 1 and %d characters", MaxInputLength)
-	}
-	if match, _ := regexp.MatchString(ValidChars, username); !match {
-		return nil, fmt.Errorf("username contains invalid characters")
+	err := ValidateInput(username)
+	if err != nil {
+		return nil, err
 	}
 
 	return &User{
