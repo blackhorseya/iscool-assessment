@@ -403,3 +403,75 @@ func TestVirtualFileSystem_DeleteFolder(t *testing.T) {
 		})
 	}
 }
+
+func TestVirtualFileSystem_RenameFolder(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		username      string
+		foldername    string
+		newFoldername string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "rename folder successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders:  map[string]*Folder{"folder1": NewFolder("folder1", "description1")},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder1", newFoldername: "folder2"},
+			wantErr: false,
+		},
+		{
+			name: "rename folder with non-existing user",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders:  map[string]*Folder{"folder1": NewFolder("folder1", "description1")},
+				},
+			}},
+			args:    args{username: "user2", foldername: "folder1", newFoldername: "folder2"},
+			wantErr: true,
+		},
+		{
+			name: "rename folder with non-existing folder",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders:  map[string]*Folder{"folder1": NewFolder("folder1", "description1")},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder2", newFoldername: "folder3"},
+			wantErr: true,
+		},
+		{
+			name: "rename folder with existing new folder name",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders:  map[string]*Folder{"folder1": NewFolder("folder1", "description1"), "folder2": NewFolder("folder2", "description2")},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder1", newFoldername: "folder2"},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			if err := vfs.RenameFolder(tt.args.username, tt.args.foldername, tt.args.newFoldername); (err != nil) != tt.wantErr {
+				t.Errorf("RenameFolder() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
