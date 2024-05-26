@@ -457,7 +457,10 @@ func TestVirtualFileSystem_RenameFolder(t *testing.T) {
 			fields: fields{Users: map[string]*User{
 				"user1": {
 					Username: "user1",
-					Folders:  map[string]*Folder{"folder1": NewFolder("folder1", "description1"), "folder2": NewFolder("folder2", "description2")},
+					Folders: map[string]*Folder{
+						"folder1": NewFolder("folder1", "description1"),
+						"folder2": NewFolder("folder2", "description2"),
+					},
 				},
 			}},
 			args:    args{username: "user1", foldername: "folder1", newFoldername: "folder2"},
@@ -471,6 +474,77 @@ func TestVirtualFileSystem_RenameFolder(t *testing.T) {
 			}
 			if err := vfs.RenameFolder(tt.args.username, tt.args.foldername, tt.args.newFoldername); (err != nil) != tt.wantErr {
 				t.Errorf("RenameFolder() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestVirtualFileSystem_ListFolders(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		username string
+		sortBy   string
+		order    string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "list folders successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{
+						"folder1": NewFolder("folder1", "description1"),
+						"folder2": NewFolder("folder2", "description2"),
+					},
+				},
+			}},
+			args:    args{username: "user1", sortBy: "name", order: "asc"},
+			wantErr: false,
+		},
+		{
+			name: "list folders with non-existing user",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{
+						"folder1": NewFolder("folder1", "description1"),
+						"folder2": NewFolder("folder2", "description2"),
+					},
+				},
+			}},
+			args:    args{username: "user2", sortBy: "name", order: "asc"},
+			wantErr: true,
+		},
+		{
+			name: "list folders with invalid sort field",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{
+						"folder1": NewFolder("folder1", "description1"),
+						"folder2": NewFolder("folder2", "description2"),
+					},
+				},
+			}},
+			args:    args{username: "user1", sortBy: "invalid", order: "asc"},
+			wantErr: false, // it should not error out, but fall back to default sort field
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			_, err := vfs.ListFolders(tt.args.username, tt.args.sortBy, tt.args.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListFolders() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
