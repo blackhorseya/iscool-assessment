@@ -5,6 +5,8 @@ import (
 	"os"
 
 	vfs2 "github.com/blackhorseya/iscool-assessment/pkg/legacy_vfs"
+	"github.com/blackhorseya/iscool-assessment/pkg/utils"
+	vfs3 "github.com/blackhorseya/iscool-assessment/pkg/vfs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -13,6 +15,7 @@ var vfs = vfs2.NewVFS()
 var dataFile = "out/vfs.json"
 var cfgFile string
 var out string
+var vfsV2 vfs3.VirtualFileSystem
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -81,4 +84,27 @@ func initConfig() {
 		fmt.Fprintf(os.Stderr, "Failed to load virtual filesystem: %v\n", err)
 		os.Exit(1)
 	}
+
+	err = initVFS()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to init virtual filesystem: %v\n", err)
+		return
+	}
+}
+
+func initVFS() (err error) {
+	pathType := utils.CheckPathType(out)
+	if pathType == "json" {
+		vfsV2, err = NewVFSWithJSON(out)
+		if err != nil {
+			return err
+		}
+	} else if pathType == "folder" {
+		vfsV2, err = NewVFSWithSystem(out)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

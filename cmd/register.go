@@ -14,19 +14,13 @@ var registerCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		username := args[0]
-		err := vfs.RegisterUser(username)
+		user, err := vfsV2.RegisterUser(username)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return
 		}
 
-		err = vfs.SaveToFile(dataFile)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			return
-		}
-
-		fmt.Printf("Add %v successfully.\n", username)
+		fmt.Printf("Add %v successfully.\n", user.Username)
 	},
 }
 
