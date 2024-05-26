@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -10,9 +11,24 @@ import (
 var deleteFolderCmd = &cobra.Command{
 	Use:   "delete-folder [username] [foldername]",
 	Short: "delete a folder",
+	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: 2024/5/26|sean|implement me
-		fmt.Println("deleteFolder called")
+		username := args[0]
+		foldername := args[1]
+
+		err := vfs.DeleteFolder(username, foldername)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		err = vfs.SaveToFile(dataFile)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Delete %v successfully.\n", foldername)
 	},
 }
 

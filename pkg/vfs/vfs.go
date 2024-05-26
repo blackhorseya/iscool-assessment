@@ -2,12 +2,10 @@ package vfs
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
-	"time"
 )
 
 const orderAsc = "asc"
@@ -31,34 +29,30 @@ func NewVFS() *VirtualFileSystem {
 func (vfs *VirtualFileSystem) CreateFile(username, foldername, filename, description string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return errors.New("the username doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", username)
 	}
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return errors.New("the foldername doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", foldername)
 	}
 	if _, exists = folder.Files[filename]; exists {
-		return errors.New("the filename has already existed")
+		return fmt.Errorf("the %s has already existed", filename)
 	}
-	folder.Files[filename] = &File{
-		Name:        filename,
-		Description: description,
-		CreatedAt:   time.Now(),
-	}
+	folder.Files[filename] = NewFile(filename, description)
 	return nil
 }
 
 func (vfs *VirtualFileSystem) DeleteFile(username, foldername, filename string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return errors.New("the username doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", username)
 	}
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return errors.New("the foldername doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", foldername)
 	}
 	if _, exists = folder.Files[filename]; !exists {
-		return errors.New("the filename doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", filename)
 	}
 	delete(folder.Files, filename)
 	return nil
@@ -67,11 +61,11 @@ func (vfs *VirtualFileSystem) DeleteFile(username, foldername, filename string) 
 func (vfs *VirtualFileSystem) ListFiles(username, foldername, sortBy string, order string) ([]*File, error) {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return nil, errors.New("the username doesn't exist")
+		return nil, fmt.Errorf("the %s doesn't exist", username)
 	}
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return nil, errors.New("the foldername doesn't exist")
+		return nil, fmt.Errorf("the %s doesn't exist", foldername)
 	}
 	var files []*File
 	for _, file := range folder.Files {
@@ -99,10 +93,10 @@ func (vfs *VirtualFileSystem) ListFiles(username, foldername, sortBy string, ord
 func (vfs *VirtualFileSystem) CreateFolder(username, foldername, description string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return errors.New("the username doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", username)
 	}
 	if _, exists = user.Folders[foldername]; exists {
-		return errors.New("the foldername has already existed")
+		return fmt.Errorf("the %s has already existed", foldername)
 	}
 	user.Folders[foldername] = NewFolder(foldername, description)
 	return nil
@@ -111,10 +105,10 @@ func (vfs *VirtualFileSystem) CreateFolder(username, foldername, description str
 func (vfs *VirtualFileSystem) DeleteFolder(username, foldername string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return errors.New("the username doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", username)
 	}
 	if _, exists = user.Folders[foldername]; !exists {
-		return errors.New("the foldername doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", foldername)
 	}
 	delete(user.Folders, foldername)
 	return nil
@@ -123,14 +117,14 @@ func (vfs *VirtualFileSystem) DeleteFolder(username, foldername string) error {
 func (vfs *VirtualFileSystem) RenameFolder(username, foldername, newFoldername string) error {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return errors.New("the username doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", username)
 	}
 	folder, exists := user.Folders[foldername]
 	if !exists {
-		return errors.New("the foldername doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", foldername)
 	}
 	if _, exists = user.Folders[newFoldername]; exists {
-		return errors.New("the new foldername already exists")
+		return fmt.Errorf("the %s has already existed", newFoldername)
 	}
 	delete(user.Folders, foldername)
 	folder.Name = newFoldername
@@ -141,7 +135,7 @@ func (vfs *VirtualFileSystem) RenameFolder(username, foldername, newFoldername s
 func (vfs *VirtualFileSystem) ListFolders(username string, sortBy string, order string) ([]*Folder, error) {
 	user, exists := vfs.Users[username]
 	if !exists {
-		return nil, errors.New("the username doesn't exist")
+		return nil, fmt.Errorf("the %s doesn't exist", username)
 	}
 	var folders []*Folder
 	for _, folder := range user.Folders {
@@ -168,7 +162,7 @@ func (vfs *VirtualFileSystem) ListFolders(username string, sortBy string, order 
 
 func (vfs *VirtualFileSystem) RegisterUser(username string) error {
 	if _, exists := vfs.Users[username]; exists {
-		return errors.New("the username has already existed")
+		return fmt.Errorf("the %s has already existed", username)
 	}
 
 	vfs.Users[username] = NewUser(username)
@@ -178,7 +172,7 @@ func (vfs *VirtualFileSystem) RegisterUser(username string) error {
 
 func (vfs *VirtualFileSystem) DeleteUser(username string) error {
 	if _, exists := vfs.Users[username]; !exists {
-		return errors.New("the username doesn't exist")
+		return fmt.Errorf("the %s doesn't exist", username)
 	}
 	delete(vfs.Users, username)
 	return nil

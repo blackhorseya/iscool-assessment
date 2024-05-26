@@ -19,3 +19,12 @@ type File struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 }
+
+// NewFile creates a new File.
+func NewFile(name, description string) *File {
+	return &File{
+		Name:        name,
+		Description: description,
+		CreatedAt:   time.Now(),
+	}
+}
