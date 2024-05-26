@@ -22,7 +22,7 @@ func Test_jsonFile_Save(t *testing.T) {
 			name: "save to valid path",
 			fields: fields{
 				users: map[string]*model.User{"user1": {Username: "user1"}},
-				path:  "testdata/valid.json",
+				path:  "out/valid.json",
 			},
 			wantErr: false,
 		},
@@ -65,7 +65,7 @@ func Test_jsonFile_Load(t *testing.T) {
 			name: "load from existing and valid json file",
 			fields: fields{
 				users: make(map[string]*model.User),
-				path:  "testdata/valid.json",
+				path:  "out/valid.json",
 			},
 			wantErr: false,
 		},
@@ -73,7 +73,7 @@ func Test_jsonFile_Load(t *testing.T) {
 			name: "load from non-existing file",
 			fields: fields{
 				users: make(map[string]*model.User),
-				path:  "testdata/non-existing.json",
+				path:  "out/non-existing.json",
 			},
 			wantErr: false,
 		},
@@ -113,7 +113,7 @@ func Test_jsonFile_Register(t *testing.T) {
 			name: "register new user",
 			fields: fields{
 				users: make(map[string]*model.User),
-				path:  "testdata/valid.json",
+				path:  "out/valid.json",
 			},
 			args: args{
 				ctx:      context.Background(),
@@ -125,7 +125,7 @@ func Test_jsonFile_Register(t *testing.T) {
 			name: "register existing user",
 			fields: fields{
 				users: map[string]*model.User{"existingUser": {Username: "existingUser"}},
-				path:  "testdata/valid.json",
+				path:  "out/valid.json",
 			},
 			args: args{
 				ctx:      context.Background(),
@@ -170,7 +170,7 @@ func Test_jsonFile_GetByUsername(t *testing.T) {
 			name: "get by existing username",
 			fields: fields{
 				users: map[string]*model.User{"existingUser": {Username: "existingUser"}},
-				path:  "testdata/valid.json",
+				path:  "out/valid.json",
 			},
 			args: args{
 				ctx:      context.Background(),
@@ -182,7 +182,7 @@ func Test_jsonFile_GetByUsername(t *testing.T) {
 			name: "get by non-existing username",
 			fields: fields{
 				users: map[string]*model.User{"existingUser": {Username: "existingUser"}},
-				path:  "testdata/valid.json",
+				path:  "out/valid.json",
 			},
 			args: args{
 				ctx:      context.Background(),
