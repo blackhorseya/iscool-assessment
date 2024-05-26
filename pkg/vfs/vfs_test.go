@@ -210,3 +210,75 @@ func TestVirtualFileSystem_DeleteFile(t *testing.T) {
 		})
 	}
 }
+
+func TestVirtualFileSystem_ListFiles(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		username   string
+		foldername string
+		sortBy     string
+		order      string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "list files successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1"), "file2": NewFile("file2", "description2")},
+					}},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder1", sortBy: "name", order: "asc"},
+			wantErr: false,
+		},
+		{
+			name: "list files with non-existing user",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1"), "file2": NewFile("file2", "description2")},
+					}},
+				},
+			}},
+			args:    args{username: "user2", foldername: "folder1", sortBy: "name", order: "asc"},
+			wantErr: true,
+		},
+		{
+			name: "list files with non-existing folder",
+			fields: fields{Users: map[string]*User{
+				"user1": {
+					Username: "user1",
+					Folders: map[string]*Folder{"folder1": {
+						Name:  "folder1",
+						Files: map[string]*File{"file1": NewFile("file1", "description1"), "file2": NewFile("file2", "description2")},
+					}},
+				},
+			}},
+			args:    args{username: "user1", foldername: "folder2", sortBy: "name", order: "asc"},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			_, err := vfs.ListFiles(tt.args.username, tt.args.foldername, tt.args.sortBy, tt.args.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListFiles() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
