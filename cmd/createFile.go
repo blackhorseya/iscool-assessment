@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -10,9 +11,30 @@ import (
 var createFileCmd = &cobra.Command{
 	Use:   "create-file [username] [foldername] [filename] [description]?",
 	Short: "Create a file in a folder",
+	Args:  cobra.RangeArgs(3, 4),
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: 2024/5/26|sean|implement me
-		fmt.Println("createFile called")
+		username := args[0]
+		foldername := args[1]
+		filename := args[2]
+		description := ""
+		if len(args) == 4 {
+			description = args[3]
+		}
+
+		err := vfs.CreateFile(username, foldername, filename, description)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		err = vfs.SaveToFile(dataFile)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			return
+		}
+
+		// Create [filename]in[username]/[foldername] successfully.
+		fmt.Printf("Create %v in %v/%v successfully.\n", filename, username, foldername)
 	},
 }
 

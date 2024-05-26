@@ -9,7 +9,7 @@ import (
 
 // createFolderCmd represents the createFolder command
 var createFolderCmd = &cobra.Command{
-	Use:   "create-folder [username] [foldername] (description)",
+	Use:   "create-folder [username] [foldername] [description]?",
 	Short: "create a new folder",
 	Args:  cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
