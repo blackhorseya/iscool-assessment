@@ -26,7 +26,7 @@ func (i *system) Register(ctx context.Context, username string) (item *model.Use
 	}
 
 	// create a folder for the user
-	err = os.MkdirAll(i.path+"/"+username, os.ModePerm)
+	err = os.MkdirAll(i.path+"/"+user.Username, os.ModePerm)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +35,20 @@ func (i *system) Register(ctx context.Context, username string) (item *model.Use
 }
 
 func (i *system) GetByUsername(ctx context.Context, username string) (item *model.User, err error) {
-	// TODO implement me
-	panic("implement me")
+	user, err := model.NewUser(username)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if the user folder exists
+	info, err := os.Stat(i.path + "/" + user.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	if !info.IsDir() {
+		return nil, os.ErrNotExist
+	}
+
+	return user, nil
 }
