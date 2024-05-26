@@ -12,6 +12,7 @@ import (
 var vfs = vfs2.NewVFS()
 var dataFile = "out/vfs.json"
 var cfgFile string
+var out string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -44,6 +45,7 @@ func init() {
 		"",
 		"config file (default is $HOME/.config/iscool/.iscool.yaml)",
 	)
+	rootCmd.PersistentFlags().StringVar(&out, "out", "out/vfs.json", "output file or directory")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
