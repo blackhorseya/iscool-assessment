@@ -14,3 +14,11 @@ type User struct {
 	Username string             `json:"username"`
 	Folders  map[string]*Folder `json:"folders"`
 }
+
+// NewUser creates a new User
+func NewUser(username string) *User {
+	return &User{
+		Username: username,
+		Folders:  make(map[string]*Folder),
+	}
+}
