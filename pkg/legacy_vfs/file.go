@@ -1,6 +1,6 @@
 //go:generate mockgen -destination=./mock_${GOFILE} -package=${GOPACKAGE} -source=${GOFILE}
 
-package vfs
+package legacy_vfs
 
 import (
 	"time"

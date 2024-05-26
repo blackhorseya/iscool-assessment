@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	vfs2 "github.com/blackhorseya/iscool-assessment/pkg/vfs"
+	vfs2 "github.com/blackhorseya/iscool-assessment/pkg/legacy_vfs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

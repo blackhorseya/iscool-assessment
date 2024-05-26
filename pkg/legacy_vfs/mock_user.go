@@ -2,7 +2,7 @@
 // Source: user.go
 
 // Package vfs is a generated GoMock package.
-package vfs
+package legacy_vfs
 
 import (
 	reflect "reflect"

@@ -1,4 +1,4 @@
-package vfs
+package legacy_vfs
 
 import (
 	"encoding/json"

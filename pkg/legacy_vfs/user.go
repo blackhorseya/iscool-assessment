@@ -1,6 +1,6 @@
 //go:generate mockgen -destination=./mock_${GOFILE} -package=${GOPACKAGE} -source=${GOFILE}
 
-package vfs
+package legacy_vfs
 
 // UserManager defines the interface for user management
 type UserManager interface {
