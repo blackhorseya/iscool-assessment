@@ -7,7 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const orderByName = "name"
+const (
+	orderByName = "name"
+	orderDesc   = "desc"
+)
 
 // listFilesCmd represents the listFiles command
 var listFilesCmd = &cobra.Command{
@@ -25,12 +28,12 @@ var listFilesCmd = &cobra.Command{
 			return
 		}
 
-		if sortName != "" && sortName != orderAsc && sortName != "desc" {
+		if sortName != "" && sortName != orderAsc && sortName != orderDesc {
 			fmt.Fprintln(os.Stderr, "Error: Invalid value for --sort-name. Use 'asc' or 'desc'")
 			return
 		}
 
-		if sortCreated != "" && sortCreated != orderAsc && sortCreated != "desc" {
+		if sortCreated != "" && sortCreated != orderAsc && sortCreated != orderDesc {
 			fmt.Fprintln(os.Stderr, "Error: Invalid value for --sort-created. Use 'asc' or 'desc'")
 			return
 		}
