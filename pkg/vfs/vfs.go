@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const orderAsc = "asc"
+
 var _ UserManager = &VirtualFileSystem{}
 var _ FolderManager = &VirtualFileSystem{}
 var _ FileManager = &VirtualFileSystem{}
@@ -78,12 +80,12 @@ func (vfs *VirtualFileSystem) ListFiles(username, foldername, sortBy string, ord
 	sort.Slice(files, func(i, j int) bool {
 		switch sortBy {
 		case "name":
-			if order == "asc" {
+			if order == orderAsc {
 				return files[i].Name < files[j].Name
 			}
 			return files[i].Name > files[j].Name
 		case "created":
-			if order == "asc" {
+			if order == orderAsc {
 				return files[i].CreatedAt.Before(files[j].CreatedAt)
 			}
 			return files[i].CreatedAt.After(files[j].CreatedAt)
@@ -148,12 +150,12 @@ func (vfs *VirtualFileSystem) ListFolders(username string, sortBy string, order 
 	sort.Slice(folders, func(i, j int) bool {
 		switch sortBy {
 		case "name":
-			if order == "asc" {
+			if order == orderAsc {
 				return folders[i].Name < folders[j].Name
 			}
 			return folders[i].Name > folders[j].Name
 		case "created":
-			if order == "asc" {
+			if order == orderAsc {
 				return folders[i].CreatedAt.Before(folders[j].CreatedAt)
 			}
 			return folders[i].CreatedAt.After(folders[j].CreatedAt)
