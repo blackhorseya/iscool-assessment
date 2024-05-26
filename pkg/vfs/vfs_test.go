@@ -591,3 +591,45 @@ func TestVirtualFileSystem_RegisterUser(t *testing.T) {
 		})
 	}
 }
+
+func TestVirtualFileSystem_DeleteUser(t *testing.T) {
+	type fields struct {
+		Users map[string]*User
+	}
+	type args struct {
+		username string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "delete user successfully",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{username: "user1"},
+			wantErr: false,
+		},
+		{
+			name: "delete user with non-existing username",
+			fields: fields{Users: map[string]*User{
+				"user1": NewUser("user1"),
+			}},
+			args:    args{username: "user2"},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vfs := &VFS{
+				Users: tt.fields.Users,
+			}
+			if err := vfs.DeleteUser(tt.args.username); (err != nil) != tt.wantErr {
+				t.Errorf("DeleteUser() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
