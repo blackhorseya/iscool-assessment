@@ -1,14 +1,11 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
-// deleteFolderCmd represents the deleteFolder command
-var deleteFolderCmd = &cobra.Command{
+// DeleteFolderCmd represents the deleteFolder command
+var DeleteFolderCmd = &cobra.Command{
 	Use:   "delete-folder [username] [foldername]",
 	Short: "delete a folder",
 	Args:  cobra.ExactArgs(2),
@@ -18,24 +15,24 @@ var deleteFolderCmd = &cobra.Command{
 
 		err := fs.DeleteFolder(username, foldername)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			cmd.Printf("Error: %v\n", err)
 			return
 		}
 
-		fmt.Printf("Delete %v successfully.\n", foldername)
+		cmd.Printf("Delete %v successfully.\n", foldername)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(deleteFolderCmd)
+	rootCmd.AddCommand(DeleteFolderCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// deleteFolderCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// DeleteFolderCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// deleteFolderCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// DeleteFolderCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -461,3 +461,67 @@ func TestDeleteFileCmd(t *testing.T) {
 		})
 	}
 }
+
+func TestDeleteFolderCmd(t *testing.T) {
+	rootCmd := &cobra.Command{}
+	rootCmd.AddCommand(cmd.RegisterCmd)
+	rootCmd.AddCommand(cmd.CreateFolderCmd)
+	rootCmd.AddCommand(cmd.DeleteFolderCmd)
+
+	testCases := []struct {
+		name       string
+		username   string
+		foldername string
+		wantErr    bool
+		wantMsg    string
+		mock       func()
+	}{
+		{
+			name:       "delete folder with valid username and foldername",
+			username:   "test",
+			foldername: "folder1",
+			wantErr:    false,
+			wantMsg:    "Delete folder1 successfully.",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder1", "test description")
+			},
+		},
+		{
+			name:       "delete folder with invalid username",
+			username:   "invalidUsername!",
+			foldername: "folder1",
+			wantErr:    false,
+			wantMsg:    "Error: the invalidUsername! doesn't exist",
+		},
+		{
+			name:       "delete folder with invalid foldername",
+			username:   "test",
+			foldername: "invalidFolder!",
+			wantErr:    false,
+			wantMsg:    "Error: the invalidFolder! doesn't exist",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.mock != nil {
+				tc.mock()
+			}
+
+			output, err := executeCommand(rootCmd, "delete-folder", tc.username, tc.foldername)
+			if tc.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Contains(t, output, tc.wantMsg)
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
