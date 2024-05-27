@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var out string
+var Out string
 var fs vfs.VirtualFileSystem
 
 // rootCmd represents the base command when called without any subcommands
@@ -36,7 +36,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&out, "out", "out/vfs.json", "output file or directory")
+	rootCmd.PersistentFlags().StringVar(&Out, "out", "out/vfs.json", "output file or directory")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -53,15 +53,15 @@ func initConfig() {
 }
 
 func initVFS() (err error) {
-	pathType := utils.CheckPathType(out)
+	pathType := utils.CheckPathType(Out)
 	switch {
 	case pathType == "json":
-		fs, err = NewVFSWithJSON(out)
+		fs, err = NewVFSWithJSON(Out)
 		if err != nil {
 			return err
 		}
 	case pathType == "folder":
-		fs, err = NewVFSWithSystem(out)
+		fs, err = NewVFSWithSystem(Out)
 		if err != nil {
 			return err
 		}
