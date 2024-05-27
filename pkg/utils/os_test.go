@@ -35,6 +35,11 @@ func TestCheckPathType(t *testing.T) {
 			path: "testdata/existing_folder",
 			want: "folder",
 		},
+		{
+			name: "Non-existing non-json file",
+			path: "non_existing_file.txt",
+			want: "folder",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
