@@ -2,6 +2,7 @@ package folder
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/blackhorseya/iscool-assessment/entity/model"
@@ -20,8 +21,8 @@ func NewSystem(path string) (repo.FolderManager, error) {
 }
 
 func (i *system) GetByName(ctx context.Context, owner *model.User, foldername string) (item *model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return nil, errors.New("not implement yet")
 }
 
 func (i *system) Create(
@@ -29,13 +30,13 @@ func (i *system) Create(
 	owner *model.User,
 	foldername, description string,
 ) (item *model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return nil, errors.New("not implement yet")
 }
 
 func (i *system) Delete(ctx context.Context, owner *model.User, foldername string) (err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return errors.New("not implement yet")
 }
 
 func (i *system) Rename(
@@ -43,8 +44,8 @@ func (i *system) Rename(
 	owner *model.User,
 	foldername, newFoldername string,
 ) (item *model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return nil, errors.New("not implement yet")
 }
 
 func (i *system) List(
@@ -53,8 +54,8 @@ func (i *system) List(
 	sortBy string,
 	order string,
 ) (items []*model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return nil, errors.New("not implement yet")
 }
 
 func (i *system) CreateFile(
@@ -63,8 +64,8 @@ func (i *system) CreateFile(
 	folder *model.Folder,
 	filename, description string,
 ) (item *model.File, err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return nil, errors.New("not implement yet")
 }
 
 func (i *system) DeleteFile(
@@ -73,8 +74,8 @@ func (i *system) DeleteFile(
 	folder *model.Folder,
 	filename string,
 ) (err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return errors.New("not implement yet")
 }
 
 func (i *system) ListFiles(
@@ -84,6 +85,6 @@ func (i *system) ListFiles(
 	sortBy string,
 	order string,
 ) (items []*model.File, err error) {
-	// TODO implement me
-	panic("implement me")
+	// todo: 2024/5/27|sean|implement me
+	return nil, errors.New("not implement yet")
 }

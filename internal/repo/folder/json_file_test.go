@@ -42,6 +42,9 @@ func Test_NewJSONFile(t *testing.T) {
 				return
 			}
 		})
+
+		// Clean up
+		_ = os.RemoveAll("out")
 	}
 }
 
@@ -134,6 +137,9 @@ func Test_jsonFile_GetByName(t *testing.T) {
 			if !reflect.DeepEqual(gotItem, tt.wantItem) {
 				t.Errorf("GetByName() gotItem = %v, want %v", gotItem, tt.wantItem)
 			}
+
+			// Clean up
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -206,7 +212,7 @@ func Test_jsonFile_Create(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -267,7 +273,7 @@ func Test_jsonFile_Delete(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -350,7 +356,7 @@ func Test_jsonFile_Rename(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -424,7 +430,7 @@ func Test_jsonFile_List(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -512,7 +518,7 @@ func Test_jsonFile_CreateFile(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -588,7 +594,7 @@ func Test_jsonFile_DeleteFile(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
@@ -679,7 +685,7 @@ func Test_jsonFile_ListFiles(t *testing.T) {
 			}
 
 			// Clean up
-			_ = os.Remove("out/vfs.json")
+			_ = os.RemoveAll("out")
 		})
 	}
 }
