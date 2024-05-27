@@ -133,3 +133,34 @@ Based on the source code of the `iscool-assessment` project, the architecture de
 
 This design ensures modularity, maintainability, and extensibility of the code while guaranteeing data persistence and
 stability.
+
+## Development
+
+To contribute to the development of this project, follow these steps:
+
+1. Fork the repository on GitHub.
+2. Clone your forked repository to your local machine:
+    ```sh
+    git clone https://github.com/your-username/iscool-assessment.git
+    ```
+3. Create a new branch for your feature or bugfix:
+    ```sh
+    git checkout -b feature-or-bugfix-name
+    ```
+4. Make your changes and commit them with a clear message:
+    ```sh
+    git commit -m "Description of your changes"
+    ```
+5. Push your changes to your forked repository:
+    ```sh
+    git push origin feature-or-bugfix-name
+    ```
+6. Create a pull request on the original repository.
+
+### Running Tests
+
+To run tests, use the following command:
+
+```sh
+go test ./...
+```
