@@ -557,3 +557,94 @@ func Test_jsonFile_DeleteFile(t *testing.T) {
 		})
 	}
 }
+
+func Test_jsonFile_ListFiles(t *testing.T) {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "validFoldername", "validDescription")
+	file1, _ := model.NewFile(user1, folder1, "file1", "validDescription")
+	file2, _ := model.NewFile(user1, folder1, "file2", "validDescription")
+
+	type args struct {
+		owner  *model.User
+		folder *model.Folder
+		sortBy string
+		order  string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []*model.File
+		wantErr bool
+	}{
+		{
+			name: "list files with valid username and foldername",
+			args: args{
+				owner:  user1,
+				folder: folder1,
+				sortBy: "name",
+				order:  "asc",
+			},
+			want:    []*model.File{file1, file2},
+			wantErr: false,
+		},
+		{
+			name: "list files with non-existing username",
+			args: args{
+				owner:  &model.User{Username: "nonExistingUsername"},
+				folder: folder1,
+				sortBy: "name",
+				order:  "asc",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "list files with non-existing foldername",
+			args: args{
+				owner:  user1,
+				folder: &model.Folder{Name: "nonExistingFoldername"},
+				sortBy: "name",
+				order:  "asc",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "list files with valid username and invalid sort field",
+			args: args{
+				owner:  user1,
+				folder: folder1,
+				sortBy: "invalidField",
+				order:  "asc",
+			},
+			want:    []*model.File{file1, file2},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				Mutex: sync.Mutex{},
+				users: map[string]*model.User{
+					user1.Username: user1,
+				},
+				path: "out/vfs.json",
+			}
+			user1.Folders[folder1.Name] = folder1
+			folder1.Files[file1.Name] = file1
+			folder1.Files[file2.Name] = file2
+
+			got, err := i.ListFiles(context.Background(), tt.args.owner, tt.args.folder, tt.args.sortBy, tt.args.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListFiles() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ListFiles() got = %v, want %v", got, tt.want)
+			}
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
