@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"sync"
 
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 	"github.com/blackhorseya/iscool-assessment/entity/repo"
 	"github.com/blackhorseya/iscool-assessment/pkg/utils"
 )
+
+const orderAsc = "asc"
 
 type jsonFile struct {
 	sync.Mutex
@@ -94,8 +97,31 @@ func (i *jsonFile) Create(
 }
 
 func (i *jsonFile) Delete(ctx context.Context, owner *model.User, foldername string) (err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	if _, exists = user.Folders[foldername]; !exists {
+		return fmt.Errorf("the %s doesn't exist", foldername)
+	}
+
+	delete(user.Folders, foldername)
+
+	err = i.Save()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *jsonFile) Rename(
@@ -103,8 +129,33 @@ func (i *jsonFile) Rename(
 	owner *model.User,
 	foldername, newFoldername string,
 ) (item *model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	folder, exists := user.Folders[foldername]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", foldername)
+	}
+
+	if _, exists = user.Folders[newFoldername]; exists {
+		return nil, fmt.Errorf("the %s has already existed", newFoldername)
+	}
+
+	delete(user.Folders, foldername)
+	folder.Name = newFoldername
+	user.Folders[newFoldername] = folder
+
+	return folder, nil
 }
 
 func (i *jsonFile) List(
@@ -113,8 +164,42 @@ func (i *jsonFile) List(
 	sortBy string,
 	order string,
 ) (items []*model.Folder, err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	var folders []*model.Folder
+	for _, folder := range user.Folders {
+		folders = append(folders, folder)
+	}
+
+	sort.Slice(folders, func(i, j int) bool {
+		switch sortBy {
+		case "name":
+			if order == orderAsc {
+				return folders[i].Name < folders[j].Name
+			}
+			return folders[i].Name > folders[j].Name
+		case "created":
+			if order == orderAsc {
+				return folders[i].CreatedAt.Before(folders[j].CreatedAt)
+			}
+			return folders[i].CreatedAt.After(folders[j].CreatedAt)
+		default:
+			return folders[i].Name < folders[j].Name
+		}
+	})
+
+	return folders, nil
 }
 
 func (i *jsonFile) CreateFile(
@@ -123,8 +208,41 @@ func (i *jsonFile) CreateFile(
 	folder *model.Folder,
 	filename, description string,
 ) (item *model.File, err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	folder, exists = user.Folders[folder.Name]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", folder.Name)
+	}
+
+	if _, exists = folder.Files[filename]; exists {
+		return nil, fmt.Errorf("the %s has already existed", filename)
+	}
+
+	file, err := model.NewFile(owner, folder, filename, description)
+	if err != nil {
+		return nil, err
+	}
+
+	folder.Files[filename] = file
+
+	err = i.Save()
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
 func (i *jsonFile) DeleteFile(
@@ -133,8 +251,36 @@ func (i *jsonFile) DeleteFile(
 	folder *model.Folder,
 	filename string,
 ) (err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	folder, exists = user.Folders[folder.Name]
+	if !exists {
+		return fmt.Errorf("the %s doesn't exist", folder.Name)
+	}
+
+	if _, exists = folder.Files[filename]; !exists {
+		return fmt.Errorf("the %s doesn't exist", filename)
+	}
+
+	delete(folder.Files, filename)
+
+	err = i.Save()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *jsonFile) ListFiles(
@@ -144,8 +290,47 @@ func (i *jsonFile) ListFiles(
 	sortBy string,
 	order string,
 ) (items []*model.File, err error) {
-	// TODO implement me
-	panic("implement me")
+	i.Lock()
+	defer i.Unlock()
+
+	err = i.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	user, exists := i.users[owner.Username]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
+	}
+
+	folder, exists = user.Folders[folder.Name]
+	if !exists {
+		return nil, fmt.Errorf("the %s doesn't exist", folder.Name)
+	}
+
+	var files []*model.File
+	for _, file := range folder.Files {
+		files = append(files, file)
+	}
+
+	sort.Slice(files, func(i, j int) bool {
+		switch sortBy {
+		case "name":
+			if order == orderAsc {
+				return files[i].Name < files[j].Name
+			}
+			return files[i].Name > files[j].Name
+		case "created":
+			if order == orderAsc {
+				return files[i].CreatedAt.Before(files[j].CreatedAt)
+			}
+			return files[i].CreatedAt.After(files[j].CreatedAt)
+		default:
+			return files[i].Name < files[j].Name
+		}
+	})
+
+	return files, nil
 }
 
 // Save is used to save the data to the file.
