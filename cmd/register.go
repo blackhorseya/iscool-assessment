@@ -1,14 +1,11 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
-// registerCmd represents the register command
-var registerCmd = &cobra.Command{
+// RegisterCmd represents the register command
+var RegisterCmd = &cobra.Command{
 	Use:   "register [username]",
 	Short: "register a new user",
 	Args:  cobra.ExactArgs(1),
@@ -16,24 +13,24 @@ var registerCmd = &cobra.Command{
 		username := args[0]
 		user, err := fs.RegisterUser(username)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			cmd.PrintErrf("Error: %v\n", err)
 			return
 		}
 
-		fmt.Printf("Add %v successfully.\n", user.Username)
+		cmd.Printf("Add %v successfully.\n", user.Username)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(registerCmd)
+	rootCmd.AddCommand(RegisterCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// registerCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// RegisterCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// registerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// RegisterCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
