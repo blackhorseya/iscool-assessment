@@ -379,3 +379,85 @@ func TestRenameFolderCmd(t *testing.T) {
 		})
 	}
 }
+
+func TestDeleteFileCmd(t *testing.T) {
+	rootCmd := &cobra.Command{}
+	rootCmd.AddCommand(cmd.RegisterCmd)
+	rootCmd.AddCommand(cmd.CreateFolderCmd)
+	rootCmd.AddCommand(cmd.CreateFileCmd)
+	rootCmd.AddCommand(cmd.DeleteFileCmd)
+
+	testCases := []struct {
+		name       string
+		username   string
+		foldername string
+		filename   string
+		wantErr    bool
+		wantMsg    string
+		mock       func()
+	}{
+		{
+			name:       "delete file with valid username, foldername and filename",
+			username:   "test",
+			foldername: "folder1",
+			filename:   "file1",
+			wantErr:    false,
+			wantMsg:    "Delete file1 in test/folder1 successfully.",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder1", "test description")
+				_, _ = executeCommand(rootCmd, "create-file", "test", "folder1", "file1", "test description")
+			},
+		},
+		{
+			name:       "delete file with invalid username",
+			username:   "invalidUsername!",
+			foldername: "folder1",
+			filename:   "file1",
+			wantErr:    false,
+			wantMsg:    "Error: the invalidUsername! doesn't exist",
+		},
+		{
+			name:       "delete file with invalid foldername",
+			username:   "test",
+			foldername: "invalidFolder!",
+			filename:   "file1",
+			wantErr:    false,
+			wantMsg:    "Error: the invalidFolder! doesn't exist",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+			},
+		},
+		{
+			name:       "delete file with invalid filename",
+			username:   "test",
+			foldername: "folder1",
+			filename:   "invalidFile!",
+			wantErr:    false,
+			wantMsg:    "Error: the invalidFile! doesn't exist",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder1", "test description")
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.mock != nil {
+				tc.mock()
+			}
+
+			output, err := executeCommand(rootCmd, "delete-file", tc.username, tc.foldername, tc.filename)
+			if tc.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Contains(t, output, tc.wantMsg)
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
