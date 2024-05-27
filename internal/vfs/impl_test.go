@@ -194,3 +194,146 @@ func (s *suiteTester) Test_impl_CreateFolder() {
 		})
 	}
 }
+
+func (s *suiteTester) Test_impl_DeleteFolder() {
+	user1, _ := model.NewUser("validUsername")
+
+	type args struct {
+		username   string
+		foldername string
+		mock       func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "delete folder with valid username and foldername",
+			args: args{
+				username:   "validUsername",
+				foldername: "validFoldername",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), user1.Username).Return(user1, nil).Times(1)
+					s.folders.EXPECT().Delete(gomock.Any(), user1, "validFoldername").Return(nil).Times(1)
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "delete folder with empty username",
+			args: args{
+				username:   "",
+				foldername: "validFoldername",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), "").Return(nil, errors.New("empty user")).Times(1)
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "delete folder with empty foldername",
+			args: args{
+				username:   "validUsername",
+				foldername: "",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), "validUsername").Return(user1, nil).Times(1)
+					s.folders.EXPECT().Delete(gomock.Any(), user1, "").Return(fmt.Errorf("foldername cannot be empty")).Times(1)
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			err := s.vfs.DeleteFolder(tt.args.username, tt.args.foldername)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DeleteFolder() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
+
+func (s *suiteTester) Test_impl_ListFolders() {
+	user1, _ := model.NewUser("validUsername")
+	folders := []*model.Folder{
+		{Name: "Folder1", Description: "Description1"},
+		{Name: "Folder2", Description: "Description2"},
+	}
+
+	type args struct {
+		username string
+		sortBy   string
+		order    string
+		mock     func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []*model.Folder
+		wantErr bool
+	}{
+		{
+			name: "list folders with valid username",
+			args: args{
+				username: "validUsername",
+				sortBy:   "name",
+				order:    "asc",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), user1.Username).Return(user1, nil).Times(1)
+					s.folders.EXPECT().List(gomock.Any(), user1, "name", "asc").Return(folders, nil).Times(1)
+				},
+			},
+			want:    folders,
+			wantErr: false,
+		},
+		{
+			name: "list folders with empty username",
+			args: args{
+				username: "",
+				sortBy:   "name",
+				order:    "asc",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), "").Return(nil, errors.New("empty user")).Times(1)
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "list folders with invalid sort field",
+			args: args{
+				username: "validUsername",
+				sortBy:   "invalid",
+				order:    "asc",
+				mock: func() {
+					s.users.EXPECT().GetByUsername(gomock.Any(), user1.Username).Return(user1, nil).Times(1)
+					s.folders.EXPECT().List(gomock.Any(), user1, "invalid", "asc").Return(nil, fmt.Errorf("invalid sort field")).Times(1)
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			got, err := s.vfs.ListFolders(tt.args.username, tt.args.sortBy, tt.args.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListFolders() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ListFolders() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

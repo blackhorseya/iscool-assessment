@@ -11,29 +11,29 @@ func TestCheckPathType(t *testing.T) {
 		want string
 	}{
 		{
-			name: "check type of non-existing json file",
+			name: "Empty path",
+			path: "",
+			want: "error",
+		},
+		{
+			name: "Non-existing json file",
 			path: "non_existing_file.json",
 			want: "json",
 		},
 		{
-			name: "check type of non-existing folder",
+			name: "Non-existing folder",
 			path: "non_existing_folder",
 			want: "folder",
 		},
 		{
-			name: "check type of existing json file",
+			name: "Existing json file",
 			path: "testdata/existing_file.json",
 			want: "json",
 		},
 		{
-			name: "check type of existing folder",
+			name: "Existing folder",
 			path: "testdata/existing_folder",
 			want: "folder",
-		},
-		{
-			name: "check type of path with error",
-			path: "",
-			want: "error",
 		},
 	}
 	for _, tt := range tests {
