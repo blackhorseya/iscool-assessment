@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
 var out string
 var fs vfs.VirtualFileSystem
 
@@ -48,24 +47,25 @@ func init() {
 func initConfig() {
 	err := initVFS()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: Failed to init virtual filesystem: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Error: Failed to init virtual filesystem: %v\n", err)
 		return
 	}
 }
 
 func initVFS() (err error) {
 	pathType := utils.CheckPathType(out)
-	if pathType == "json" {
+	switch {
+	case pathType == "json":
 		fs, err = NewVFSWithJSON(out)
 		if err != nil {
 			return err
 		}
-	} else if pathType == "folder" {
+	case pathType == "folder":
 		fs, err = NewVFSWithSystem(out)
 		if err != nil {
 			return err
 		}
-	} else {
+	default:
 		return fmt.Errorf("unsupported path type: %s", pathType)
 	}
 
