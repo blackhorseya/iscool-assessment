@@ -97,11 +97,3 @@ Cobra; potential commands include, but are not limited to:
   ```sh
   ./iscool-assessment list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]
   ```
-
-## Project Structure
-
-- `main.go`: The main entry point of the application where the CLI is initialized and commands are defined.
-- `vfs.go`: Contains the implementation of the virtual file system, including logic for user, folder, and file
-  management.
-- `vfs_data.json`: The JSON file where user and file system data is persisted, ensuring data is retained between
-  sessions.
