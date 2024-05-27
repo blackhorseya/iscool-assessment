@@ -2,6 +2,7 @@ package folder
 
 import (
 	"context"
+	"os"
 	"reflect"
 	"sync"
 	"testing"
@@ -98,6 +99,79 @@ func Test_jsonFile_GetByName(t *testing.T) {
 			if !reflect.DeepEqual(gotItem, tt.wantItem) {
 				t.Errorf("GetByName() gotItem = %v, want %v", gotItem, tt.wantItem)
 			}
+		})
+	}
+}
+
+func Test_jsonFile_Create(t *testing.T) {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "validFoldername", "validDescription")
+	folder2, _ := model.NewFolder(user1, "folder2", "validDescription")
+
+	type args struct {
+		owner       *model.User
+		foldername  string
+		description string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *model.Folder
+		wantErr bool
+	}{
+		{
+			name: "create folder with valid username and foldername",
+			args: args{
+				owner:       user1,
+				foldername:  "folder2",
+				description: "validDescription",
+			},
+			want:    folder2,
+			wantErr: false,
+		},
+		{
+			name: "create folder with non-existing username",
+			args: args{
+				owner:       &model.User{Username: "nonExistingUsername"},
+				foldername:  "validFoldername",
+				description: "validDescription",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "create folder with existing foldername",
+			args: args{
+				owner:       user1,
+				foldername:  "validFoldername",
+				description: "validDescription",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				Mutex: sync.Mutex{},
+				users: map[string]*model.User{
+					user1.Username: user1,
+				},
+				path: "out/vfs.json",
+			}
+			user1.Folders[folder1.Name] = folder1
+
+			got, err := i.Create(context.Background(), tt.args.owner, tt.args.foldername, tt.args.description)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.want != nil && got.Name != tt.want.Name {
+				t.Errorf("Create() got = %v, want %v", got, tt.want)
+			}
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
 		})
 	}
 }
