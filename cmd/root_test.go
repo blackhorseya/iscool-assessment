@@ -298,3 +298,84 @@ func TestListFoldersCmd(t *testing.T) {
 		})
 	}
 }
+
+func TestRenameFolderCmd(t *testing.T) {
+	rootCmd := &cobra.Command{}
+	rootCmd.AddCommand(cmd.RegisterCmd)
+	rootCmd.AddCommand(cmd.CreateFolderCmd)
+	rootCmd.AddCommand(cmd.RenameFolderCmd)
+
+	testCases := []struct {
+		name          string
+		username      string
+		foldername    string
+		newFolderName string
+		wantErr       bool
+		wantMsg       string
+		mock          func()
+	}{
+		{
+			name:          "rename folder with valid username and foldername",
+			username:      "test",
+			foldername:    "folder1",
+			newFolderName: "folder2",
+			wantErr:       false,
+			wantMsg:       "Rename folder1 to folder2 successfully.",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder1", "test description")
+			},
+		},
+		{
+			name:          "rename folder with invalid username",
+			username:      "invalidUsername!",
+			foldername:    "folder1",
+			newFolderName: "folder2",
+			wantErr:       false,
+			wantMsg:       "Error: the invalidUsername! doesn't exist",
+		},
+		{
+			name:          "rename folder with invalid foldername",
+			username:      "test",
+			foldername:    "invalidFolder!",
+			newFolderName: "folder2",
+			wantErr:       false,
+			wantMsg:       "Error: the invalidFolder! doesn't exist",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+			},
+		},
+		{
+			name:          "rename folder with existing new folder name",
+			username:      "test",
+			foldername:    "folder1",
+			newFolderName: "folder1",
+			wantErr:       false,
+			wantMsg:       "Error: the folder1 has already existed",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder1", "test description")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder2", "test description")
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.mock != nil {
+				tc.mock()
+			}
+
+			output, err := executeCommand(rootCmd, "rename-folder", tc.username, tc.foldername, tc.newFolderName)
+			if tc.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Contains(t, output, tc.wantMsg)
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
