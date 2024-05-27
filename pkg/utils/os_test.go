@@ -44,3 +44,36 @@ func TestCheckPathType(t *testing.T) {
 		})
 	}
 }
+
+func TestEnsureDir(t *testing.T) {
+	tests := []struct {
+		name    string
+		path    string
+		wantErr bool
+	}{
+		{
+			name:    "Creates non-existent directory",
+			path:    "test_dir/file.txt",
+			wantErr: false,
+		},
+		{
+			name:    "Does not create existing directory",
+			path:    "test_dir/file.txt",
+			wantErr: false,
+		},
+		{
+			name:    "Returns error for invalid path",
+			path:    "",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := EnsureDir(tt.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("EnsureDir() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

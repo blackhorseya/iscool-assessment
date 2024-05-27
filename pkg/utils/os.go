@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,6 +37,10 @@ func CheckPathType(path string) string {
 
 // EnsureDir checks if the directory for the file exists and creates it if not
 func EnsureDir(fileName string) error {
+	if fileName == "" {
+		return errors.New("invalid path")
+	}
+
 	dir := filepath.Dir(fileName)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0755)
