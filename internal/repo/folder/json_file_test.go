@@ -319,3 +319,77 @@ func Test_jsonFile_Rename(t *testing.T) {
 		})
 	}
 }
+
+func Test_jsonFile_List(t *testing.T) {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "folder1", "validDescription")
+	folder2, _ := model.NewFolder(user1, "folder2", "validDescription")
+
+	type args struct {
+		owner  *model.User
+		sortBy string
+		order  string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []*model.Folder
+		wantErr bool
+	}{
+		{
+			name: "list folders with valid username",
+			args: args{
+				owner:  user1,
+				sortBy: "name",
+				order:  "asc",
+			},
+			want:    []*model.Folder{folder1, folder2},
+			wantErr: false,
+		},
+		{
+			name: "list folders with non-existing username",
+			args: args{
+				owner:  &model.User{Username: "nonExistingUsername"},
+				sortBy: "name",
+				order:  "asc",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "list folders with valid username and invalid sort field",
+			args: args{
+				owner:  user1,
+				sortBy: "invalidField",
+				order:  "asc",
+			},
+			want:    []*model.Folder{folder1, folder2},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				Mutex: sync.Mutex{},
+				users: map[string]*model.User{
+					user1.Username: user1,
+				},
+				path: "out/vfs.json",
+			}
+			user1.Folders[folder1.Name] = folder1
+			user1.Folders[folder2.Name] = folder2
+
+			got, err := i.List(context.Background(), tt.args.owner, tt.args.sortBy, tt.args.order)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("List() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("List() got = %v, want %v", got, tt.want)
+			}
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
