@@ -32,7 +32,7 @@ func TestCheckPathType(t *testing.T) {
 			path: "out/existing_file.json",
 			want: "json",
 			mock: func() {
-				_ = EnsureDir("out")
+				_ = os.MkdirAll("out", 0755)
 				_, _ = os.Create("out/existing_file.json")
 			},
 		},
