@@ -1,5 +1,6 @@
 # Virtual File System CLI
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=blackhorseya_iscool-assessment&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=blackhorseya_iscool-assessment)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=blackhorseya_iscool-assessment&metric=coverage)](https://sonarcloud.io/summary/new_code?id=blackhorseya_iscool-assessment)
 
 This is a command-line application for managing a virtual file system with user and file management capabilities using
