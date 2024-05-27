@@ -30,6 +30,11 @@ func NewJSONFile(path string) (repo.FolderManager, error) {
 		path:  path,
 	}
 
+	err := instance.Load()
+	if err != nil {
+		return nil, err
+	}
+
 	return instance, nil
 }
 
@@ -40,11 +45,6 @@ func (i *jsonFile) GetByName(
 ) (item *model.Folder, err error) {
 	i.Lock()
 	defer i.Unlock()
-
-	err = i.Load()
-	if err != nil {
-		return nil, err
-	}
 
 	user, exists := i.users[owner.Username]
 	if !exists {
@@ -66,11 +66,6 @@ func (i *jsonFile) Create(
 ) (item *model.Folder, err error) {
 	i.Lock()
 	defer i.Unlock()
-
-	err = i.Load()
-	if err != nil {
-		return nil, err
-	}
 
 	user, exists := i.users[owner.Username]
 	if !exists {
@@ -100,11 +95,6 @@ func (i *jsonFile) Delete(ctx context.Context, owner *model.User, foldername str
 	i.Lock()
 	defer i.Unlock()
 
-	err = i.Load()
-	if err != nil {
-		return err
-	}
-
 	user, exists := i.users[owner.Username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", owner.Username)
@@ -131,11 +121,6 @@ func (i *jsonFile) Rename(
 ) (item *model.Folder, err error) {
 	i.Lock()
 	defer i.Unlock()
-
-	err = i.Load()
-	if err != nil {
-		return nil, err
-	}
 
 	user, exists := i.users[owner.Username]
 	if !exists {
@@ -166,11 +151,6 @@ func (i *jsonFile) List(
 ) (items []*model.Folder, err error) {
 	i.Lock()
 	defer i.Unlock()
-
-	err = i.Load()
-	if err != nil {
-		return nil, err
-	}
 
 	user, exists := i.users[owner.Username]
 	if !exists {
@@ -211,11 +191,6 @@ func (i *jsonFile) CreateFile(
 	i.Lock()
 	defer i.Unlock()
 
-	err = i.Load()
-	if err != nil {
-		return nil, err
-	}
-
 	user, exists := i.users[owner.Username]
 	if !exists {
 		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
@@ -254,11 +229,6 @@ func (i *jsonFile) DeleteFile(
 	i.Lock()
 	defer i.Unlock()
 
-	err = i.Load()
-	if err != nil {
-		return err
-	}
-
 	user, exists := i.users[owner.Username]
 	if !exists {
 		return fmt.Errorf("the %s doesn't exist", owner.Username)
@@ -292,11 +262,6 @@ func (i *jsonFile) ListFiles(
 ) (items []*model.File, err error) {
 	i.Lock()
 	defer i.Unlock()
-
-	err = i.Load()
-	if err != nil {
-		return nil, err
-	}
 
 	user, exists := i.users[owner.Username]
 	if !exists {
