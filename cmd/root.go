@@ -48,7 +48,7 @@ func init() {
 func initConfig() {
 	err := initVFS()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to init virtual filesystem: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: Failed to init virtual filesystem: %v\n", err)
 		return
 	}
 }
@@ -65,6 +65,8 @@ func initVFS() (err error) {
 		if err != nil {
 			return err
 		}
+	} else {
+		return fmt.Errorf("unsupported path type: %s", pathType)
 	}
 
 	return nil
