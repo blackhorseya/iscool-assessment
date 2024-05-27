@@ -24,7 +24,11 @@ func (i *system) GetByName(ctx context.Context, owner *model.User, foldername st
 	panic("implement me")
 }
 
-func (i *system) Create(ctx context.Context, owner *model.User, foldername, description string) (item *model.Folder, err error) {
+func (i *system) Create(
+	ctx context.Context,
+	owner *model.User,
+	foldername, description string,
+) (item *model.Folder, err error) {
 	// TODO implement me
 	panic("implement me")
 }
@@ -34,27 +38,52 @@ func (i *system) Delete(ctx context.Context, owner *model.User, foldername strin
 	panic("implement me")
 }
 
-func (i *system) Rename(ctx context.Context, owner *model.User, foldername, newFoldername string) (item *model.Folder, err error) {
+func (i *system) Rename(
+	ctx context.Context,
+	owner *model.User,
+	foldername, newFoldername string,
+) (item *model.Folder, err error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (i *system) List(ctx context.Context, owner *model.User, sortBy string, order string) (items []*model.Folder, err error) {
+func (i *system) List(
+	ctx context.Context,
+	owner *model.User,
+	sortBy string,
+	order string,
+) (items []*model.Folder, err error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (i *system) CreateFile(ctx context.Context, owner *model.User, folder *model.Folder, filename, description string) (item *model.File, err error) {
+func (i *system) CreateFile(
+	ctx context.Context,
+	owner *model.User,
+	folder *model.Folder,
+	filename, description string,
+) (item *model.File, err error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (i *system) DeleteFile(ctx context.Context, owner *model.User, folder *model.Folder, filename string) (err error) {
+func (i *system) DeleteFile(
+	ctx context.Context,
+	owner *model.User,
+	folder *model.Folder,
+	filename string,
+) (err error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (i *system) ListFiles(ctx context.Context, owner *model.User, folder *model.Folder, sortBy string, order string) (items []*model.File, err error) {
+func (i *system) ListFiles(
+	ctx context.Context,
+	owner *model.User,
+	folder *model.Folder,
+	sortBy string,
+	order string,
+) (items []*model.File, err error) {
 	// TODO implement me
 	panic("implement me")
 }
