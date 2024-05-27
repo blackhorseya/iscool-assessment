@@ -8,6 +8,41 @@ import (
 	"github.com/blackhorseya/iscool-assessment/entity/model"
 )
 
+func Test_NewJSONFile(t *testing.T) {
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "create new JSON file with valid path",
+			args: args{
+				path: "out/valid.json",
+			},
+			wantErr: false,
+		},
+		{
+			name: "create new JSON file with invalid path",
+			args: args{
+				path: "/invalid/path.json",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewJSONFile(tt.args.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewJSONFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
+
 func Test_jsonFile_Save(t *testing.T) {
 	type fields struct {
 		users map[string]*model.User
