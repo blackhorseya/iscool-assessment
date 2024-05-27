@@ -236,3 +236,86 @@ func Test_jsonFile_Delete(t *testing.T) {
 		})
 	}
 }
+
+func Test_jsonFile_Rename(t *testing.T) {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "validFoldername", "validDescription")
+	folder2, _ := model.NewFolder(user1, "newValidFoldername", "validDescription")
+
+	type args struct {
+		owner         *model.User
+		foldername    string
+		newFoldername string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *model.Folder
+		wantErr bool
+	}{
+		{
+			name: "rename folder with valid username and foldername",
+			args: args{
+				owner:         user1,
+				foldername:    "validFoldername",
+				newFoldername: "newValidFoldername",
+			},
+			want:    folder2,
+			wantErr: false,
+		},
+		{
+			name: "rename folder with non-existing username",
+			args: args{
+				owner:         &model.User{Username: "nonExistingUsername"},
+				foldername:    "validFoldername",
+				newFoldername: "newValidFoldername",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "rename folder with non-existing foldername",
+			args: args{
+				owner:         user1,
+				foldername:    "nonExistingFoldername",
+				newFoldername: "newValidFoldername",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "rename folder with existing new foldername",
+			args: args{
+				owner:         user1,
+				foldername:    "validFoldername",
+				newFoldername: "validFoldername",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				Mutex: sync.Mutex{},
+				users: map[string]*model.User{
+					user1.Username: user1,
+				},
+				path: "out/vfs.json",
+			}
+			user1.Folders[folder1.Name] = folder1
+
+			got, err := i.Rename(context.Background(), tt.args.owner, tt.args.foldername, tt.args.newFoldername)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Rename() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.want != nil && got.Name != tt.want.Name {
+				t.Errorf("Rename() got = %v, want %v", got, tt.want)
+			}
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
