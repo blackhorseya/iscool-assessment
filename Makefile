@@ -7,7 +7,7 @@ help: ## show help
 
 .PHONY: clean
 clean:  ## remove artifacts
-	@rm -rf cover.out result.json ./bin
+	@rm -rf cover.out result.json bin out **/out
 	@echo Successfuly removed artifacts
 
 .PHONY: lint
