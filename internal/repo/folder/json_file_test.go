@@ -393,3 +393,91 @@ func Test_jsonFile_List(t *testing.T) {
 		})
 	}
 }
+
+func Test_jsonFile_CreateFile(t *testing.T) {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "validFoldername", "validDescription")
+	file1, _ := model.NewFile(user1, folder1, "validFilename", "validDescription")
+
+	type args struct {
+		owner       *model.User
+		folder      *model.Folder
+		filename    string
+		description string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *model.File
+		wantErr bool
+	}{
+		{
+			name: "create file with valid username, foldername and filename",
+			args: args{
+				owner:       user1,
+				folder:      folder1,
+				filename:    "validFilename",
+				description: "validDescription",
+			},
+			want:    file1,
+			wantErr: false,
+		},
+		{
+			name: "create file with non-existing username",
+			args: args{
+				owner:       &model.User{Username: "nonExistingUsername"},
+				folder:      folder1,
+				filename:    "validFilename",
+				description: "validDescription",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "create file with non-existing foldername",
+			args: args{
+				owner:       user1,
+				folder:      &model.Folder{Name: "nonExistingFoldername"},
+				filename:    "validFilename",
+				description: "validDescription",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "create file with existing filename",
+			args: args{
+				owner:       user1,
+				folder:      folder1,
+				filename:    "validFilename",
+				description: "validDescription",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				Mutex: sync.Mutex{},
+				users: map[string]*model.User{
+					user1.Username: user1,
+				},
+				path: "out/vfs.json",
+			}
+			user1.Folders[folder1.Name] = folder1
+
+			got, err := i.CreateFile(context.Background(), tt.args.owner, tt.args.folder, tt.args.filename, tt.args.description)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CreateFile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.want != nil && got.Name != tt.want.Name {
+				t.Errorf("CreateFile() got = %v, want %v", got, tt.want)
+			}
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}

@@ -205,7 +205,7 @@ func (i *jsonFile) List(
 func (i *jsonFile) CreateFile(
 	ctx context.Context,
 	owner *model.User,
-	folder *model.Folder,
+	dir *model.Folder,
 	filename, description string,
 ) (item *model.File, err error) {
 	i.Lock()
@@ -221,9 +221,9 @@ func (i *jsonFile) CreateFile(
 		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
 	}
 
-	folder, exists = user.Folders[folder.Name]
+	folder, exists := user.Folders[dir.Name]
 	if !exists {
-		return nil, fmt.Errorf("the %s doesn't exist", folder.Name)
+		return nil, fmt.Errorf("the %s doesn't exist", dir.Name)
 	}
 
 	if _, exists = folder.Files[filename]; exists {
@@ -248,7 +248,7 @@ func (i *jsonFile) CreateFile(
 func (i *jsonFile) DeleteFile(
 	ctx context.Context,
 	owner *model.User,
-	folder *model.Folder,
+	dir *model.Folder,
 	filename string,
 ) (err error) {
 	i.Lock()
@@ -264,9 +264,9 @@ func (i *jsonFile) DeleteFile(
 		return fmt.Errorf("the %s doesn't exist", owner.Username)
 	}
 
-	folder, exists = user.Folders[folder.Name]
+	folder, exists := user.Folders[dir.Name]
 	if !exists {
-		return fmt.Errorf("the %s doesn't exist", folder.Name)
+		return fmt.Errorf("the %s doesn't exist", dir.Name)
 	}
 
 	if _, exists = folder.Files[filename]; !exists {
@@ -286,7 +286,7 @@ func (i *jsonFile) DeleteFile(
 func (i *jsonFile) ListFiles(
 	ctx context.Context,
 	owner *model.User,
-	folder *model.Folder,
+	dir *model.Folder,
 	sortBy string,
 	order string,
 ) (items []*model.File, err error) {
@@ -303,9 +303,9 @@ func (i *jsonFile) ListFiles(
 		return nil, fmt.Errorf("the %s doesn't exist", owner.Username)
 	}
 
-	folder, exists = user.Folders[folder.Name]
+	folder, exists := user.Folders[dir.Name]
 	if !exists {
-		return nil, fmt.Errorf("the %s doesn't exist", folder.Name)
+		return nil, fmt.Errorf("the %s doesn't exist", dir.Name)
 	}
 
 	var files []*model.File
