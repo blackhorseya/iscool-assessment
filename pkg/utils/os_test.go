@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"os"
 	"testing"
 )
 
@@ -9,6 +10,7 @@ func TestCheckPathType(t *testing.T) {
 		name string
 		path string
 		want string
+		mock func()
 	}{
 		{
 			name: "Empty path",
@@ -27,13 +29,19 @@ func TestCheckPathType(t *testing.T) {
 		},
 		{
 			name: "Existing json file",
-			path: "testdata/existing_file.json",
+			path: "out/existing_file.json",
 			want: "json",
+			mock: func() {
+				_ = EnsureDir("out/existing_file.json")
+			},
 		},
 		{
 			name: "Existing folder",
-			path: "testdata/existing_folder",
+			path: "out/existing_folder",
 			want: "folder",
+			mock: func() {
+				_ = EnsureDir("out/existing_folder")
+			},
 		},
 		{
 			name: "Non-existing non-json file",
@@ -43,11 +51,17 @@ func TestCheckPathType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.mock != nil {
+				tt.mock()
+			}
+
 			if got := CheckPathType(tt.path); got != tt.want {
 				t.Errorf("CheckPathType() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+
+	_ = os.RemoveAll("out")
 }
 
 func TestEnsureDir(t *testing.T) {
