@@ -112,3 +112,106 @@ func TestCreateFolder(t *testing.T) {
 
 	_ = os.Remove("out/vfs.json")
 }
+
+func TestListFilesCmd(t *testing.T) {
+	rootCmd := &cobra.Command{}
+	rootCmd.AddCommand(cmd.RegisterCmd)
+	rootCmd.AddCommand(cmd.CreateFolderCmd)
+	rootCmd.AddCommand(cmd.CreateFileCmd)
+	rootCmd.AddCommand(cmd.ListFilesCmd)
+
+	testCases := []struct {
+		name        string
+		username    string
+		foldername  string
+		sortName    string
+		sortCreated string
+		wantErr     bool
+		wantMsg     string
+		mock        func()
+	}{
+		{
+			name:        "list files with valid username and foldername",
+			username:    "user1",
+			foldername:  "folder1",
+			sortName:    "",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "folder1 user1",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "user1")
+				_, _ = executeCommand(rootCmd, "create-folder", "user1", "folder1", "test description")
+				_, _ = executeCommand(rootCmd, "create-file", "user1", "folder1", "file1", "test description")
+			},
+		},
+		{
+			name:        "list files with invalid username",
+			username:    "invalidUsername!",
+			foldername:  "test-folder",
+			sortName:    "",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "Error: the invalidUsername! doesn't exist",
+		},
+		{
+			name:        "list files with invalid foldername",
+			username:    "test",
+			foldername:  "invalidFolder!",
+			sortName:    "",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "Error: the invalidFolder! doesn't exist",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+			},
+		},
+		{
+			name:        "list files with both sort-name and sort-created flags",
+			username:    "test",
+			foldername:  "test-folder",
+			sortName:    "asc",
+			sortCreated: "desc",
+			wantErr:     false,
+			wantMsg:     "Error: Cannot use both --sort-name and --sort-created flags together",
+		},
+		{
+			name:        "list files with invalid sort-name value",
+			username:    "test",
+			foldername:  "test-folder",
+			sortName:    "invalid",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "Error: Invalid value for --sort-name. Use 'asc' or 'desc'",
+		},
+		{
+			name:        "list files with invalid sort-created value",
+			username:    "test",
+			foldername:  "test-folder",
+			sortName:    "",
+			sortCreated: "invalid",
+			wantErr:     false,
+			wantMsg:     "Error: Invalid value for --sort-created. Use 'asc' or 'desc'",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.mock != nil {
+				tc.mock()
+			}
+
+			_ = cmd.ListFilesCmd.Flags().Set("sort-name", tc.sortName)
+			_ = cmd.ListFilesCmd.Flags().Set("sort-created", tc.sortCreated)
+			output, err := executeCommand(rootCmd, "list-files", tc.username, tc.foldername)
+			if tc.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Contains(t, output, tc.wantMsg)
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}

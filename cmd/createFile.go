@@ -1,14 +1,11 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
-// createFileCmd represents the createFile command
-var createFileCmd = &cobra.Command{
+// CreateFileCmd represents the createFile command
+var CreateFileCmd = &cobra.Command{
 	Use:   "create-file [username] [foldername] [filename] [description]?",
 	Short: "Create a file in a folder",
 	Args:  cobra.RangeArgs(3, 4),
@@ -23,25 +20,25 @@ var createFileCmd = &cobra.Command{
 
 		file, err := fs.CreateFile(username, foldername, filename, description)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			cmd.Printf("Error: %v\n", err)
 			return
 		}
 
 		// Create [filename]in[username]/[foldername] successfully.
-		fmt.Printf("Create %v in %v/%v successfully.\n", file.Name, username, foldername)
+		cmd.Printf("Create %v in %v/%v successfully.\n", file.Name, username, foldername)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(createFileCmd)
+	rootCmd.AddCommand(CreateFileCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// createFileCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// CreateFileCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// createFileCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// CreateFileCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -12,8 +9,8 @@ const (
 	orderDesc   = "desc"
 )
 
-// listFilesCmd represents the listFiles command
-var listFilesCmd = &cobra.Command{
+// ListFilesCmd represents the listFiles command
+var ListFilesCmd = &cobra.Command{
 	Use:   "list-files [username] [foldername]",
 	Short: "List all files in a folder",
 	Args:  cobra.ExactArgs(2),
@@ -24,17 +21,17 @@ var listFilesCmd = &cobra.Command{
 		sortCreated, _ := cmd.Flags().GetString("sort-created")
 
 		if sortName != "" && sortCreated != "" {
-			fmt.Fprintln(os.Stderr, "Error: Cannot use both --sort-name and --sort-created flags together")
+			cmd.Println("Error: Cannot use both --sort-name and --sort-created flags together")
 			return
 		}
 
 		if sortName != "" && sortName != orderAsc && sortName != orderDesc {
-			fmt.Fprintln(os.Stderr, "Error: Invalid value for --sort-name. Use 'asc' or 'desc'")
+			cmd.Println("Error: Invalid value for --sort-name. Use 'asc' or 'desc'")
 			return
 		}
 
 		if sortCreated != "" && sortCreated != orderAsc && sortCreated != orderDesc {
-			fmt.Fprintln(os.Stderr, "Error: Invalid value for --sort-created. Use 'asc' or 'desc'")
+			cmd.Println("Error: Invalid value for --sort-created. Use 'asc' or 'desc'")
 			return
 		}
 
@@ -52,36 +49,36 @@ var listFilesCmd = &cobra.Command{
 
 		files, err := fs.ListFiles(username, foldername, sortCriteria, order)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			cmd.PrintErrf("Error: %v\n", err)
 			return
 		}
 
 		// Warning: The folder is empty.
 		if len(files) == 0 {
-			fmt.Fprintln(os.Stderr, "Warning: The folder is empty.")
+			cmd.Println("Warning: The folder is empty.")
 			return
 		}
 
 		// List files with the following fields: [filename] [description] [created at] [foldername] [username]
 		for _, file := range files {
 			createdAt := file.CreatedAt.Format("2006-01-02 15:04:05")
-			fmt.Printf("%s %s %s %s %s\n", file.Name, file.Description, createdAt, foldername, username)
+			cmd.Printf("%s %s %s %s %s\n", file.Name, file.Description, createdAt, foldername, username)
 		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(listFilesCmd)
+	rootCmd.AddCommand(ListFilesCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// listFilesCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// ListFilesCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// listFilesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	listFilesCmd.Flags().String("sort-name", "", "Sort folders by name (asc or desc)")
-	listFilesCmd.Flags().String("sort-created", "", "Sort folders by created time (asc or desc)")
+	// ListFilesCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	ListFilesCmd.Flags().String("sort-name", "", "Sort folders by name (asc or desc)")
+	ListFilesCmd.Flags().String("sort-created", "", "Sort folders by created time (asc or desc)")
 }
