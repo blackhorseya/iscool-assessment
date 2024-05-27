@@ -98,3 +98,38 @@ Cobra; potential commands include, but are not limited to:
   ```sh
   ./iscool-assessment list-files [username] [foldername] [--sort-name|--sort-created] [asc|desc]
   ```
+
+## Architecture Design Explanation
+
+Based on the source code of the `iscool-assessment` project, the architecture design can be explained as follows:
+
+1. **Main Module (`main.go`)**:
+    - This is the entry point of the application, defining the command-line interface (CLI) and related commands.
+    - It handles user input parsing and invokes the corresponding functionality modules.
+
+2. **Virtual File System Module (`vfs.go`)**:
+    - Implements the main logic for the virtual file system, including operations for creating, deleting, and renaming
+      files and folders.
+    - Uses structs to represent files and directories, providing methods for various file system operations.
+
+3. **Data Persistence (`vfs_data.json`)**:
+    - Utilizes a JSON file to store user and file system data, ensuring data persistence across application restarts.
+    - Includes serialization and deserialization logic to read from and write to the data file.
+
+### Detailed Explanation
+
+1. **Main Module**:
+    - Uses the `cobra` package to handle command-line arguments and commands.
+    - Sets up multiple subcommands like `register`, `mkdir`, `rm`, `rename`, each corresponding to a specific operation.
+
+2. **Virtual File System Module**:
+    - The `FileSystem` struct represents the virtual file system, containing users and directory structures.
+    - Provides methods such as `CreateFolder`, `DeleteFolder`, `RenameFolder` for managing the file system.
+    - Internally uses map structures for efficient management and lookup of files and folders.
+
+3. **Data Persistence**:
+    - Reads from the `vfs_data.json` file at startup to load existing data.
+    - Updates the `vfs_data.json` file after each operation to ensure data consistency and persistence.
+
+This design ensures modularity, maintainability, and extensibility of the code while guaranteeing data persistence and
+stability.
