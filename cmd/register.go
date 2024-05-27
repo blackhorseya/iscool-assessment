@@ -14,7 +14,7 @@ var registerCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		username := args[0]
-		user, err := vfsV2.RegisterUser(username)
+		user, err := fs.RegisterUser(username)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return

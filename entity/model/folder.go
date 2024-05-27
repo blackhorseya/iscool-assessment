@@ -11,7 +11,7 @@ type Folder struct {
 	CreatedAt   time.Time `json:"created_at"`
 
 	Owner   *User              `json:"-"`
-	Files   map[string]*File   `json:"-"`
+	Files   map[string]*File   `json:"files"`
 	Folders map[string]*Folder `json:"-"`
 }
 

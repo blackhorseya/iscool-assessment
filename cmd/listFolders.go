@@ -46,7 +46,7 @@ var listFoldersCmd = &cobra.Command{
 			order = sortCreated
 		}
 
-		folders, err := vfs.ListFolders(username, sortCriteria, order)
+		folders, err := fs.ListFolders(username, sortCriteria, order)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return

@@ -50,7 +50,7 @@ var listFilesCmd = &cobra.Command{
 			order = sortCreated
 		}
 
-		files, err := vfs.ListFiles(username, foldername, sortCriteria, order)
+		files, err := fs.ListFiles(username, foldername, sortCriteria, order)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return

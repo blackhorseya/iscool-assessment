@@ -17,13 +17,7 @@ var deleteFileCmd = &cobra.Command{
 		foldername := args[1]
 		filename := args[2]
 
-		err := vfs.DeleteFile(username, foldername, filename)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			return
-		}
-
-		err = vfs.SaveToFile(dataFile)
+		err := fs.DeleteFile(username, foldername, filename)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return

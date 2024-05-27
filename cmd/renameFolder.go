@@ -17,13 +17,7 @@ var renameFolderCmd = &cobra.Command{
 		foldername := args[1]
 		newFolderName := args[2]
 
-		err := vfs.RenameFolder(username, foldername, newFolderName)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			return
-		}
-
-		err = vfs.SaveToFile(dataFile)
+		_, err := fs.RenameFolder(username, foldername, newFolderName)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return

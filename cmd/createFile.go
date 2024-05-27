@@ -21,20 +21,14 @@ var createFileCmd = &cobra.Command{
 			description = args[3]
 		}
 
-		err := vfs.CreateFile(username, foldername, filename, description)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			return
-		}
-
-		err = vfs.SaveToFile(dataFile)
+		file, err := fs.CreateFile(username, foldername, filename, description)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return
 		}
 
 		// Create [filename]in[username]/[foldername] successfully.
-		fmt.Printf("Create %v in %v/%v successfully.\n", filename, username, foldername)
+		fmt.Printf("Create %v in %v/%v successfully.\n", file.Name, username, foldername)
 	},
 }
 

@@ -20,7 +20,7 @@ var createFolderCmd = &cobra.Command{
 			description = args[2]
 		}
 
-		folder, err := vfsV2.CreateFolder(username, foldername, description)
+		folder, err := fs.CreateFolder(username, foldername, description)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			return
