@@ -30,17 +30,37 @@ func TestRegisterCmd(t *testing.T) {
 	rootCmd := &cobra.Command{}
 	rootCmd.AddCommand(cmd.RegisterCmd)
 
-	t.Run("register a new user", func(t *testing.T) {
-		output, err := executeCommand(rootCmd, "register", "test")
-		assert.NoError(t, err)
-		assert.Contains(t, output, "Add test successfully.")
-	})
+	testCases := []struct {
+		name     string
+		username string
+		wantErr  bool
+		wantMsg  string
+	}{
+		{
+			name:     "register a new user",
+			username: "test",
+			wantErr:  false,
+			wantMsg:  "Add test successfully.",
+		},
+		{
+			name:     "register a new user with the same username",
+			username: "test",
+			wantErr:  false,
+			wantMsg:  "Error: the test has already existed",
+		},
+	}
 
-	t.Run("register a new user with the same username", func(t *testing.T) {
-		output, err := executeCommand(rootCmd, "register", "test")
-		assert.NoError(t, err)
-		assert.Contains(t, output, "Error: the test has already existed")
-	})
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			output, err := executeCommand(rootCmd, "register", tc.username)
+			if tc.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Contains(t, output, tc.wantMsg)
+		})
+	}
 
 	_ = os.Remove("out/vfs.json")
 }
