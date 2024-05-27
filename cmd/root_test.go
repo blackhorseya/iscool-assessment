@@ -215,3 +215,86 @@ func TestListFilesCmd(t *testing.T) {
 		})
 	}
 }
+
+func TestListFoldersCmd(t *testing.T) {
+	rootCmd := &cobra.Command{}
+	rootCmd.AddCommand(cmd.RegisterCmd)
+	rootCmd.AddCommand(cmd.CreateFolderCmd)
+	rootCmd.AddCommand(cmd.ListFoldersCmd)
+
+	testCases := []struct {
+		name        string
+		username    string
+		sortName    string
+		sortCreated string
+		wantErr     bool
+		wantMsg     string
+		mock        func()
+	}{
+		{
+			name:        "list folders with valid username",
+			username:    "test",
+			sortName:    "",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "test",
+			mock: func() {
+				_, _ = executeCommand(rootCmd, "register", "test")
+				_, _ = executeCommand(rootCmd, "create-folder", "test", "folder1", "test description")
+			},
+		},
+		{
+			name:        "list folders with invalid username",
+			username:    "invalidUsername!",
+			sortName:    "",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "Error: the invalidUsername! doesn't exist",
+		},
+		{
+			name:        "list folders with both sort-name and sort-created flags",
+			username:    "test",
+			sortName:    "asc",
+			sortCreated: "desc",
+			wantErr:     false,
+			wantMsg:     "Error: Cannot use both --sort-name and --sort-created flags together",
+		},
+		{
+			name:        "list folders with invalid sort-name value",
+			username:    "test",
+			sortName:    "invalid",
+			sortCreated: "",
+			wantErr:     false,
+			wantMsg:     "Error: Invalid value for --sort-name. Use 'asc' or 'desc'",
+		},
+		{
+			name:        "list folders with invalid sort-created value",
+			username:    "test",
+			sortName:    "",
+			sortCreated: "invalid",
+			wantErr:     false,
+			wantMsg:     "Error: Invalid value for --sort-created. Use 'asc' or 'desc'",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.mock != nil {
+				tc.mock()
+			}
+
+			_ = cmd.ListFoldersCmd.Flags().Set("sort-name", tc.sortName)
+			_ = cmd.ListFoldersCmd.Flags().Set("sort-created", tc.sortCreated)
+			output, err := executeCommand(rootCmd, "list-folders", tc.username)
+			if tc.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Contains(t, output, tc.wantMsg)
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
