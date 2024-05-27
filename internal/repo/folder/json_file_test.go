@@ -50,6 +50,20 @@ func Test_jsonFile_GetByName(t *testing.T) {
 			wantErr:  false,
 		},
 		{
+			name: "User not found",
+			fields: fields{
+				users: map[string]*model.User{},
+				path:  "out/vfs.json",
+			},
+			args: args{
+				ctx:        context.Background(),
+				owner:      &model.User{Username: "user1"},
+				foldername: "folder1",
+			},
+			wantItem: nil,
+			wantErr:  true,
+		},
+		{
 			name: "Folder not found",
 			fields: fields{
 				users: map[string]*model.User{
