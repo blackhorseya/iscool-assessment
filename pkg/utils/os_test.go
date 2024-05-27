@@ -32,7 +32,8 @@ func TestCheckPathType(t *testing.T) {
 			path: "out/existing_file.json",
 			want: "json",
 			mock: func() {
-				_ = EnsureDir("out/existing_file.json")
+				_ = EnsureDir("out")
+				_, _ = os.Create("out/existing_file.json")
 			},
 		},
 		{
@@ -40,7 +41,7 @@ func TestCheckPathType(t *testing.T) {
 			path: "out/existing_folder",
 			want: "folder",
 			mock: func() {
-				_ = EnsureDir("out/existing_folder")
+				_ = os.MkdirAll("out/existing_folder", 0755)
 			},
 		},
 		{
@@ -72,12 +73,12 @@ func TestEnsureDir(t *testing.T) {
 	}{
 		{
 			name:    "Creates non-existent directory",
-			path:    "test_dir/file.txt",
+			path:    "out/file.txt",
 			wantErr: false,
 		},
 		{
 			name:    "Does not create existing directory",
-			path:    "test_dir/file.txt",
+			path:    "out/file.txt",
 			wantErr: false,
 		},
 		{
@@ -95,4 +96,6 @@ func TestEnsureDir(t *testing.T) {
 			}
 		})
 	}
+
+	_ = os.RemoveAll("out")
 }

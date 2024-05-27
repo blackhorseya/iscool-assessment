@@ -19,6 +19,7 @@ func CheckPathType(path string) string {
 			if strings.HasSuffix(path, ".json") {
 				return "json"
 			}
+
 			return "folder"
 		}
 		return "error"
