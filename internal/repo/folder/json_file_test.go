@@ -175,3 +175,64 @@ func Test_jsonFile_Create(t *testing.T) {
 		})
 	}
 }
+
+func Test_jsonFile_Delete(t *testing.T) {
+	user1, _ := model.NewUser("validUsername")
+	folder1, _ := model.NewFolder(user1, "validFoldername", "validDescription")
+
+	type args struct {
+		owner      *model.User
+		foldername string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "delete folder with valid username and foldername",
+			args: args{
+				owner:      user1,
+				foldername: "validFoldername",
+			},
+			wantErr: false,
+		},
+		{
+			name: "delete folder with non-existing username",
+			args: args{
+				owner:      &model.User{Username: "nonExistingUsername"},
+				foldername: "validFoldername",
+			},
+			wantErr: true,
+		},
+		{
+			name: "delete folder with non-existing foldername",
+			args: args{
+				owner:      user1,
+				foldername: "nonExistingFoldername",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			i := &jsonFile{
+				Mutex: sync.Mutex{},
+				users: map[string]*model.User{
+					user1.Username: user1,
+				},
+				path: "out/vfs.json",
+			}
+			user1.Folders[folder1.Name] = folder1
+
+			err := i.Delete(context.Background(), tt.args.owner, tt.args.foldername)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			// Clean up
+			_ = os.Remove("out/vfs.json")
+		})
+	}
+}
